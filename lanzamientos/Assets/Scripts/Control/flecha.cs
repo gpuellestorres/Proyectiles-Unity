@@ -3,7 +3,7 @@ using System.Collections;
 
 public class flecha : MonoBehaviour {
 
-    public Vector2 centro = new Vector2(-9, -4);
+    Vector2 centro;
     public float distanciaRespectoAlCentro = 1.5f;
 
     public float x, y;
@@ -12,6 +12,8 @@ public class flecha : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        pelota Pelota = FindObjectOfType<pelota>();
+        centro = new Vector2(Pelota.transform.position.x, Pelota.transform.position.y);
 	}
 	
 	// Update is called once per frame

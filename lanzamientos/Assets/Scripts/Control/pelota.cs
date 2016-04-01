@@ -9,6 +9,9 @@ public class pelota : MonoBehaviour {
     public float multiplicadorFuerza = 3;
     public float gravedad = 2;
 
+    public float segundosChoque = 2;
+    float t0Choque = 0;
+
     float movimientoX;
     float movimientoY;
 
@@ -17,6 +20,8 @@ public class pelota : MonoBehaviour {
 
     bool movimiento = false;
     bool inicioMovimiento = false;
+
+    bool choque = false;
 
     public flecha Flecha;
 
@@ -62,9 +67,10 @@ public class pelota : MonoBehaviour {
         Flecha.transform.position = posicionInicialFlecha;
         Flecha.controlarPosicion = true;
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update()
+    {
 
         if (Input.GetMouseButtonDown(0) && !movimiento)
         {
@@ -87,7 +93,7 @@ public class pelota : MonoBehaviour {
                     {
                         fuerza = 15;
                         return;
-                    }                        
+                    }
 
                     objetosBencina[indiceObjetos].position = new Vector2(-8, -4 + 0.3f * indiceObjetos);
                 }
@@ -119,11 +125,24 @@ public class pelota : MonoBehaviour {
             }
 
             if (transform.position.y < -6 || transform.position.y > 6 || transform.position.x > 10) reiniciar();
+
+            if (choque)
+            {
+                if (Time.timeSinceLevelLoad > t0Choque + segundosChoque)
+                {
+                    choque = false;
+                }
+            }
         }
-	}
+    }
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        if (choque) return;
+
+        choque = true;
+        t0Choque = Time.timeSinceLevelLoad;
+
         print("Colisión con objeto");
         if (other.GetComponent<objetivo>()!=null)
         {
@@ -132,13 +151,28 @@ public class pelota : MonoBehaviour {
         else if (other.GetComponent<obstaculo>() != null)
         {
             Vector3 rotacion = other.GetComponent<obstaculo>().transform.eulerAngles;
-            modificarTrayectoria(rotacion);
+            modificarTrayectoria(rotacion, other.tag);
         }
     }
 
-    private void modificarTrayectoria(Vector3 rotacion)
+    private void modificarTrayectoria(Vector3 rotacion, string tag)
     {
+        print(tag);
+
         float normal = rotacion.z - 180;
+
+        if (tag.Equals("derecho"))
+        {
+            normal += 180;
+        }
+        else if (tag.Equals("arriba"))
+        {
+            normal -= 90;
+        }
+        else if (tag.Equals("abajo"))
+        {
+            normal += 90;
+        }
 
         float fuerzaActual = movimientoX * movimientoX + movimientoY * movimientoY;
         fuerzaActual = Mathf.Sqrt(fuerzaActual);
