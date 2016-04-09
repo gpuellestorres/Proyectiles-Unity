@@ -7,7 +7,9 @@ public class pelota : MonoBehaviour {
 
     public float fuerza = 0;
     public float multiplicadorFuerza = 3;
+    public float multiplicadorFuerzaRebote = 1.5f;
     public float gravedad = 2;
+    public float minimoFuerzaRebote = 1;
 
     public float segundosChoque = 2;
     float t0Choque = 0;
@@ -37,8 +39,6 @@ public class pelota : MonoBehaviour {
         posicionInicialFlecha = Flecha.transform.position;
 
         Flecha = Instantiate(Flecha);
-
-        int i = 0;
         List<Transform> objsBenc = new List<Transform>();
 
         foreach (Transform barra in objetosBencina)
@@ -49,6 +49,7 @@ public class pelota : MonoBehaviour {
         objetosBencina = objsBenc.ToArray();
 
         reiniciar();
+        
 	}
 
     void reiniciar()
@@ -72,10 +73,11 @@ public class pelota : MonoBehaviour {
     void Update()
     {
 
-        if (Input.GetMouseButtonDown(0) && !movimiento)
+        if (((Application.platform!=RuntimePlatform.Android && Input.GetMouseButtonDown(0)) || Input.GetButtonDown("ps4_X") || (Application.platform == RuntimePlatform.Android && presionandoFire())) && !movimiento)
         {
             inicioMovimiento = true;
             t0 = Time.timeSinceLevelLoad;
+            //Fire.finEjecucion();
         }
 
         float tiempoActual = Time.timeSinceLevelLoad;
@@ -84,14 +86,14 @@ public class pelota : MonoBehaviour {
         {
             if (tiempoActual >= t0 + tiempoRefresco)
             {
-                if (Input.GetMouseButton(0))
+                if ((Input.GetMouseButton(0) && Application.platform!=RuntimePlatform.Android) || Input.GetButton("ps4_X") || (Application.platform==RuntimePlatform.Android && presionandoFire()))
                 {
                     fuerza += 0.3f;
 
                     int indiceObjetos = (int)fuerza;
                     if (indiceObjetos >= objetosBencina.Length)
                     {
-                        fuerza = 15;
+                        fuerza = 9;
                         return;
                     }
 
@@ -138,9 +140,6 @@ public class pelota : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (choque) return;
-
-        choque = true;
         t0Choque = Time.timeSinceLevelLoad;
 
         print("Colisión con objeto");
@@ -148,8 +147,9 @@ public class pelota : MonoBehaviour {
         {
             other.GetComponent<objetivo>().destruir();
         }
-        else if (other.GetComponent<obstaculo>() != null)
+        else if (other.GetComponent<obstaculo>() != null && !choque)
         {
+            choque = true;
             Vector3 rotacion = other.GetComponent<obstaculo>().transform.eulerAngles;
             modificarTrayectoria(rotacion, other.tag);
         }
@@ -177,7 +177,28 @@ public class pelota : MonoBehaviour {
         float fuerzaActual = movimientoX * movimientoX + movimientoY * movimientoY;
         fuerzaActual = Mathf.Sqrt(fuerzaActual);
 
-        movimientoX = Mathf.Cos(Mathf.Deg2Rad * normal) * fuerzaActual * multiplicadorFuerza + movimientoX;
-        movimientoY = Mathf.Sin(Mathf.Deg2Rad * normal) * fuerzaActual * multiplicadorFuerza + movimientoY;
+        float fuerzaRebote = fuerzaActual * multiplicadorFuerzaRebote;
+
+        print(fuerzaRebote);
+
+        if (fuerzaRebote < minimoFuerzaRebote)
+        {
+            fuerzaRebote = minimoFuerzaRebote;
+        }
+
+        movimientoX = Mathf.Cos(Mathf.Deg2Rad * normal) * fuerzaRebote + movimientoX;
+        movimientoY = Mathf.Sin(Mathf.Deg2Rad * normal) * fuerzaRebote + movimientoY;
+    }
+
+    private bool presionandoFire()
+    {
+        foreach (Touch TOUCH in Input.touches)
+        {
+            if (TOUCH.position.x > Screen.width / 2 && TOUCH.position.y < Screen.height / 2)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

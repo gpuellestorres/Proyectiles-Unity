@@ -23,8 +23,6 @@ public class objetivo : MonoBehaviour {
             cargarSiguienteNivel();
             destruido = false;
         }
-
-        if (operation != null) print(operation.progress);
 	}
 
     private void cargarSiguienteNivel()

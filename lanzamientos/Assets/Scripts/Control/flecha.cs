@@ -10,15 +10,18 @@ public class flecha : MonoBehaviour {
 
     public bool controlarPosicion = true;
 
+    puntero puntero;
+
     // Use this for initialization
     void Start () {
         pelota Pelota = FindObjectOfType<pelota>();
+        puntero = FindObjectOfType<puntero>();
         centro = new Vector2(Pelota.transform.position.x, Pelota.transform.position.y);
-	}
+    }
 	
 	// Update is called once per frame
 	void Update () {
-        Vector2 diferenciaCentroMouse = new Vector2(Input.mousePosition.x - centro.x, Input.mousePosition.y - centro.y);
+        Vector2 diferenciaCentroMouse = new Vector2(puntero.transform.position.x - centro.x, puntero.transform.position.y - centro.y);
 
         float razonXY = 0;
         if (diferenciaCentroMouse.y != 0)
@@ -35,11 +38,20 @@ public class flecha : MonoBehaviour {
         y = x;
         x = x * razonXY;
 
-        if(controlarPosicion)
-        transform.position = new Vector2(centro.x + x, centro.y + y);
+        
 
         float angulo = Mathf.Rad2Deg * Mathf.Acos(x / distanciaRespectoAlCentro);
-
-        transform.rotation = Quaternion.Euler(0, 0, 270 + angulo);
+        if (puntero.transform.position.y >= centro.y)
+        {
+            transform.rotation = Quaternion.Euler(0, 0, 270 + angulo);
+            if (controlarPosicion)
+                transform.position = new Vector2(centro.x + x, centro.y + y);
+        }
+        else
+        {
+            transform.rotation = Quaternion.Euler(0, 0, 90 + angulo);
+            if (controlarPosicion)
+                transform.position = new Vector2(centro.x - x, centro.y - y);
+        }
 	}
 }
