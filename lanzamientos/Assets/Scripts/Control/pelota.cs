@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using UnityEngine.UI;
 
 public class pelota : MonoBehaviour {
 
@@ -72,8 +73,23 @@ public class pelota : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        bool presionandoFire = false;
 
-        if (((Application.platform!=RuntimePlatform.Android && Input.GetMouseButtonDown(0)) || Input.GetButtonDown("ps4_X") || (Application.platform == RuntimePlatform.Android && presionandoFire())) && !movimiento)
+        if (
+            (Input.touchCount > 0 &&
+            (Input.GetTouch(0).position.x > Screen.width / 2 && Input.GetTouch(0).position.y < Screen.height / 2))
+            ||
+            (Input.touchCount > 1 &&
+            (Input.GetTouch(1).position.x > Screen.width / 2 && Input.GetTouch(1).position.y < Screen.height / 2))
+            )
+        {
+            presionandoFire = true;
+        }
+
+        if (((Application.platform!=RuntimePlatform.Android && Input.GetMouseButtonDown(0)) 
+            || Input.GetButtonDown("ps4_X") 
+            || presionandoFire)
+            && !inicioMovimiento && !movimiento)
         {
             inicioMovimiento = true;
             t0 = Time.timeSinceLevelLoad;
@@ -86,7 +102,10 @@ public class pelota : MonoBehaviour {
         {
             if (tiempoActual >= t0 + tiempoRefresco)
             {
-                if ((Input.GetMouseButton(0) && Application.platform!=RuntimePlatform.Android) || Input.GetButton("ps4_X") || (Application.platform==RuntimePlatform.Android && presionandoFire()))
+                if (
+                    (Input.GetMouseButton(0) && Application.platform!=RuntimePlatform.Android)
+                    || Input.GetButton("ps4_X") 
+                    || presionandoFire)
                 {
                     fuerza += 0.3f;
 
@@ -188,17 +207,5 @@ public class pelota : MonoBehaviour {
 
         movimientoX = Mathf.Cos(Mathf.Deg2Rad * normal) * fuerzaRebote + movimientoX;
         movimientoY = Mathf.Sin(Mathf.Deg2Rad * normal) * fuerzaRebote + movimientoY;
-    }
-
-    private bool presionandoFire()
-    {
-        foreach (Touch TOUCH in Input.touches)
-        {
-            if (TOUCH.position.x > Screen.width / 2 && TOUCH.position.y < Screen.height / 2)
-            {
-                return true;
-            }
-        }
-        return false;
     }
 }

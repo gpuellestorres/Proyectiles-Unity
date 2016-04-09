@@ -13,12 +13,11 @@ public class puntero : MonoBehaviour {
 
     Vector2 posicionAnteriorAndroid;
 
-    bool moviendoIzquierdaAndroid = false;
-    bool moviendoDerechaAndroid = false;
-    bool moviendoArribaAndroid = false;
-    bool moviendoAbajoAndroid = false;
+    float moviendoXant = 0, moviendoYant = 0, Xandroid =0, YAndroid=0;
 
     float arriba, abajo, izquierda, derecha;
+
+    public float deadZoneAndroid = 0.5f;
 
     // Use this for initialization
     void Start() {
@@ -36,10 +35,6 @@ public class puntero : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        Text texto = FindObjectOfType<Text>();
-        if (Input.touchCount > 0) texto.text = Input.touches[0].position.x + " - " + Input.touches[0].position.y;
-        else texto.text = Input.mousePosition.x + " - " + Input.mousePosition.y;
-
         float t1 = Time.timeSinceLevelLoad;
 
         if ((Input.GetAxis("Mouse X") != 0 || Input.GetAxis("Mouse X") != 0) && Application.platform != RuntimePlatform.Android)
@@ -54,61 +49,59 @@ public class puntero : MonoBehaviour {
             transform.position = new Vector3(transform.position.x + Input.GetAxis("Horizontal") * velocidadJoystick * (t1 - t0),
                 transform.position.y + Input.GetAxis("Vertical") * velocidadJoystick * (t1 - t0), -1);
         }
-        else if (Application.platform == RuntimePlatform.Android)
+        else if (Input.touchCount > 0)
         {
-            if (Input.touchCount > 0)
+            float movimientoX = 0;
+            float movimientoY = 0;
+
+            if (Input.touchCount > 0 &&
+            (Input.GetTouch(0).position.x < Screen.width / 2 && Input.GetTouch(0).position.y < Screen.height / 2))
             {
-                int i = 0;
-                /*moviendoDerechaAndroid = false;
-                moviendoIzquierdaAndroid = false;
-                moviendoArribaAndroid = false;
-                moviendoAbajoAndroid = false;//*/
-
-                for (i = Input.touchCount-1; i > 0; i--)
+                Touch touchActual = Input.GetTouch(0);
+                if (touchActual.phase == TouchPhase.Moved)
                 {
-                    Touch touchActual = Input.GetTouch(i);
-                    if (touchActual.position.x < Screen.width / 2 && touchActual.position.y < Screen.height / 2)
-                    {
-                        Vector2 deltaPosicion = touchActual.deltaPosition;
-
-                        if (deltaPosicion.x>5)
-                        {
-                            moviendoDerechaAndroid = true;
-                            moviendoIzquierdaAndroid = false;
-                        }
-                        else if (deltaPosicion.x<5)
-                        {
-                            moviendoDerechaAndroid = false;
-                            moviendoIzquierdaAndroid = true;
-                        }
-
-                        if (deltaPosicion.y>5)
-                        {
-                            moviendoArribaAndroid = true;
-                            moviendoAbajoAndroid = false;
-                        }
-                        else if (deltaPosicion.y<5)
-                        {
-                            moviendoArribaAndroid = false;
-                            moviendoAbajoAndroid = true;
-                        }
-                        break;
-                    }
+                    movimientoX = touchActual.deltaPosition.x;
+                    movimientoY = touchActual.deltaPosition.y;
                 }
-                float movimientoX = 0;
-                float movimientoY = 0;
-
-                if (moviendoIzquierdaAndroid) movimientoX = -1;
-                else if (moviendoDerechaAndroid) movimientoX = 1;
-
-                if (moviendoArribaAndroid) movimientoY = 1;
-                else if (moviendoAbajoAndroid) movimientoY = -1;
-
-                transform.position = new Vector3(transform.position.x + movimientoX * velocidadJoystick * (t1 - t0),
-                    transform.position.y + movimientoY * velocidadJoystick * (t1 - t0), -1);
-
-                //if (stick != null) stick.finEjecucion();
             }
+            else if (Input.touchCount > 1 &&
+            (Input.GetTouch(1).position.x < Screen.width / 2 && Input.GetTouch(1).position.y < Screen.height / 2))
+            {
+                Touch touchActual = Input.GetTouch(1);
+                if (touchActual.phase == TouchPhase.Moved)
+                {
+                    movimientoX = touchActual.deltaPosition.x;
+                    movimientoY = touchActual.deltaPosition.y;
+                }
+            }
+            else
+            {
+                moviendoXant = 0;
+                moviendoYant = 0;
+                Xandroid = 0;
+                YAndroid = 0;
+            }
+
+            if (movimientoX > deadZoneAndroid || movimientoX < -deadZoneAndroid)
+            {
+                moviendoXant = movimientoX;
+            }
+                if(movimientoY > deadZoneAndroid || movimientoY < -deadZoneAndroid)
+            {                
+                moviendoYant = movimientoY;
+            }
+            Xandroid = moviendoXant / 2;
+            YAndroid = moviendoYant / 2;
+
+            if (Xandroid > 1) Xandroid = 1;
+            if (YAndroid > 1) YAndroid = 1;
+            if (Xandroid < -1) Xandroid = -1;
+            if (YAndroid < -1) YAndroid = -1;
+
+            transform.position = new Vector3(transform.position.x + Xandroid * velocidadJoystick * (t1 - t0),
+                transform.position.y + YAndroid * velocidadJoystick * (t1 - t0), -1);
+
+            //if (stick != null) stick.finEjecucion();
         }
 
         if (transform.position.x < izquierda + 0.2f || transform.position.x > derecha - 0.2f ||
