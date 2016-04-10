@@ -15,9 +15,9 @@ public class fire : MonoBehaviour
         elRenderer = GetComponent<SpriteRenderer>();
 
 
-        if (Application.platform != RuntimePlatform.Android) {
+        /*if (Application.platform != RuntimePlatform.Android) {
             finEjecucion();
-        }
+        }//*/
     }
 
     // Update is called once per frame
