@@ -32,7 +32,7 @@ public class pelota : MonoBehaviour {
 
     Vector3 posicionInicial;
     Vector3 posicionInicialFlecha;
-
+    
     // Use this for initialization
     void Start() {
 
@@ -107,7 +107,7 @@ public class pelota : MonoBehaviour {
                     || Input.GetButton("ps4_X") 
                     || presionandoFire)
                 {
-                    fuerza += 0.3f;
+                    fuerza += 0.26f;
 
                     int indiceObjetos = (int)fuerza;
                     if (indiceObjetos >= objetosBencina.Length)

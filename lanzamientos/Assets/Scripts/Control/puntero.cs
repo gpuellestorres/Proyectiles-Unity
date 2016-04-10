@@ -19,6 +19,9 @@ public class puntero : MonoBehaviour {
 
     public float deadZoneAndroid = 0.5f;
 
+    Vector2 centro;
+    bool empezar = false;
+
     // Use this for initialization
     void Start() {
         camera = FindObjectOfType<Camera>();
@@ -51,57 +54,54 @@ public class puntero : MonoBehaviour {
         }
         else if (Input.touchCount > 0)
         {
-            float movimientoX = 0;
-            float movimientoY = 0;
-
             if (Input.touchCount > 0 &&
             (Input.GetTouch(0).position.x < Screen.width / 2 && Input.GetTouch(0).position.y < Screen.height / 2))
             {
                 Touch touchActual = Input.GetTouch(0);
-                if (touchActual.phase == TouchPhase.Moved)
+                if (touchActual.phase != TouchPhase.Began && empezar)
                 {
-                    movimientoX = touchActual.deltaPosition.x;
-                    movimientoY = touchActual.deltaPosition.y;
+                    Vector2 nuevaPosicion = camera.ScreenToWorldPoint(touchActual.position);
+                    Vector2 movimiento = new Vector2(nuevaPosicion.x - centro.x, nuevaPosicion.y - centro.y);
+
+                    float x = movimiento.x;
+                    float y = movimiento.y;
+
+                    transform.position = new Vector2(transform.position.x + x / 15, transform.position.y + y / 15);
+                }
+                else if (touchActual.phase == TouchPhase.Began)
+                {
+                    centro = camera.ScreenToWorldPoint(touchActual.position);
+                    empezar = true;
                 }
             }
             else if (Input.touchCount > 1 &&
             (Input.GetTouch(1).position.x < Screen.width / 2 && Input.GetTouch(1).position.y < Screen.height / 2))
             {
                 Touch touchActual = Input.GetTouch(1);
-                if (touchActual.phase == TouchPhase.Moved)
+                if (touchActual.phase != TouchPhase.Began && empezar)
                 {
-                    movimientoX = touchActual.deltaPosition.x;
-                    movimientoY = touchActual.deltaPosition.y;
+                    Vector2 nuevaPosicion = camera.ScreenToWorldPoint(touchActual.position);
+                    Vector2 movimiento = new Vector2(nuevaPosicion.x - centro.x, nuevaPosicion.y - centro.y);
+
+                    float x = movimiento.x;
+                    float y = movimiento.y;
+
+                    transform.position = new Vector2(transform.position.x + x / 15, transform.position.y + y / 15);
+                }
+                else if (touchActual.phase == TouchPhase.Began)
+                {
+                    centro = camera.ScreenToWorldPoint(touchActual.position);
+                    empezar = true;
                 }
             }
-            else
-            {
-                moviendoXant = 0;
-                moviendoYant = 0;
-                Xandroid = 0;
-                YAndroid = 0;
-            }
-
-            if (movimientoX > deadZoneAndroid || movimientoX < -deadZoneAndroid)
-            {
-                moviendoXant = movimientoX;
-            }
-                if(movimientoY > deadZoneAndroid || movimientoY < -deadZoneAndroid)
-            {                
-                moviendoYant = movimientoY;
-            }
-            Xandroid = moviendoXant / 2;
-            YAndroid = moviendoYant / 2;
-
-            if (Xandroid > 1) Xandroid = 1;
-            if (YAndroid > 1) YAndroid = 1;
-            if (Xandroid < -1) Xandroid = -1;
-            if (YAndroid < -1) YAndroid = -1;
-
-            transform.position = new Vector3(transform.position.x + Xandroid * velocidadJoystick * (t1 - t0),
-                transform.position.y + YAndroid * velocidadJoystick * (t1 - t0), -1);
-
-            //if (stick != null) stick.finEjecucion();
+        }
+        else
+        {
+            moviendoXant = 0;
+            moviendoYant = 0;
+            Xandroid = 0;
+            YAndroid = 0;
+            empezar = false;
         }
 
         if (transform.position.x < izquierda + 0.2f || transform.position.x > derecha - 0.2f ||
