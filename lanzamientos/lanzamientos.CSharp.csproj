@@ -76,6 +76,7 @@
     <Compile Include="Assets\Scripts\Movimiento\verticalReaparecer.cs" />
     <Compile Include="Assets\Scripts\Objetivos\objetivo.cs" />
     <Compile Include="Assets\Scripts\cerrar.cs" />
+    <Compile Include="Assets\Scripts\mostrarNivel.cs" />
     <Compile Include="Assets\Scripts\objetos\bomba.cs" />
     <Compile Include="Assets\Scripts\objetos\obstaculo.cs" />
   </ItemGroup>
