@@ -8,12 +8,8 @@ public class puntero : MonoBehaviour {
 
     public float velocidadJoystick=5;
     float t0;
-    
-    aparicionStick stick;
 
     Vector2 posicionAnteriorAndroid;
-
-    float moviendoXant = 0, moviendoYant = 0, Xandroid =0, YAndroid=0;
 
     float arriba, abajo, izquierda, derecha;
 
@@ -26,8 +22,6 @@ public class puntero : MonoBehaviour {
     void Start() {
         camera = FindObjectOfType<Camera>();
         t0 = Time.timeSinceLevelLoad;
-
-        stick = FindObjectOfType<aparicionStick>();
 
         arriba = camera.ScreenToWorldPoint(new Vector2(0, Screen.height)).y;
         abajo = camera.ScreenToWorldPoint(new Vector2(0, 0)).y;
@@ -97,10 +91,6 @@ public class puntero : MonoBehaviour {
         }
         else
         {
-            moviendoXant = 0;
-            moviendoYant = 0;
-            Xandroid = 0;
-            YAndroid = 0;
             empezar = false;
         }
 

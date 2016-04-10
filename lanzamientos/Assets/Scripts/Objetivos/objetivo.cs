@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 public class objetivo : MonoBehaviour {
 
     bool destruido = false;
-    float t0 = 0;
     public float tiempoParaSiguienteNivel = 3;
 
 
@@ -62,6 +61,5 @@ public class objetivo : MonoBehaviour {
     {
         transform.position = new Vector2(-20,-20);
         destruido = true;
-        t0 = Time.timeSinceLevelLoad;
     }
 }

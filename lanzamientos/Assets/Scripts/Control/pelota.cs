@@ -9,14 +9,15 @@ public class pelota : MonoBehaviour {
     public float fuerza = 0;
     public float multiplicadorFuerza = 3;
     public float multiplicadorFuerzaRebote = 1.5f;
+    public float fuerzaBomba = 3.5f;
     public float gravedad = 2;
     public float minimoFuerzaRebote = 1;
 
     public float segundosChoque = 2;
     float t0Choque = 0;
 
-    float movimientoX;
-    float movimientoY;
+    public float movimientoX;
+    public float movimientoY;
 
     public float tiempoRefresco = 0.01f;
     float t0;
@@ -68,6 +69,12 @@ public class pelota : MonoBehaviour {
 
         Flecha.transform.position = posicionInicialFlecha;
         Flecha.controlarPosicion = true;
+
+
+        foreach (bomba Bomba in FindObjectsOfType<bomba>())
+        {
+            Bomba.reiniciar();
+        }
     }
 
     // Update is called once per frame
@@ -107,16 +114,17 @@ public class pelota : MonoBehaviour {
                     || Input.GetButton("ps4_X") 
                     || presionandoFire)
                 {
-                    fuerza += 0.26f;
+                    fuerza += 0.27f;
 
-                    int indiceObjetos = (int)fuerza;
+                    int indiceObjetos = (int)(fuerza*2);
+
                     if (indiceObjetos >= objetosBencina.Length)
                     {
                         fuerza = 9;
                         return;
                     }
 
-                    objetosBencina[indiceObjetos].position = new Vector2(-8, -4 + 0.3f * indiceObjetos);
+                    objetosBencina[indiceObjetos].position = new Vector2(-8, -4 + 0.28f * indiceObjetos);
                 }
                 else
                 {
@@ -145,7 +153,8 @@ public class pelota : MonoBehaviour {
                 movimientoY -= gravedad * diferenciaTiempo;
             }
 
-            if (transform.position.y < -6 || transform.position.y > 6 || transform.position.x > 10) reiniciar();
+            if (transform.position.y < -6 || transform.position.y > 6 || transform.position.x > 10 || transform.position.x < -10)
+                reiniciar();
 
             if (choque)
             {
@@ -161,8 +170,8 @@ public class pelota : MonoBehaviour {
     {
         t0Choque = Time.timeSinceLevelLoad;
 
-        print("Colisión con objeto");
-        if (other.GetComponent<objetivo>()!=null)
+        //print("Colisión con objeto");
+        if (other.GetComponent<objetivo>() != null)
         {
             other.GetComponent<objetivo>().destruir();
         }
@@ -172,6 +181,30 @@ public class pelota : MonoBehaviour {
             Vector3 rotacion = other.GetComponent<obstaculo>().transform.eulerAngles;
             modificarTrayectoria(rotacion, other.tag);
         }
+        else if (other.GetComponent<bomba>() != null && !choque)
+        {
+            choque = true;
+            Vector2 diferenciaPosiciones = 
+                new Vector2(transform.position.x - other.transform.position.x,
+                    transform.position.y - other.transform.position.y);
+            modificarTrayectoriaBomba(diferenciaPosiciones, other.transform.localScale.x);
+            other.GetComponent<bomba>().borrar = true;
+        }
+    }
+
+    private void modificarTrayectoriaBomba(Vector2 diferenciaPosiciones, float escala)
+    {
+
+        float hipotenusa = Mathf.Pow(diferenciaPosiciones.x, 2) + Mathf.Pow(diferenciaPosiciones.y, 2);
+        hipotenusa = Mathf.Sqrt(hipotenusa);
+
+        float razonFuerzas = fuerzaBomba / hipotenusa;
+
+        float fuerzaBombaX = diferenciaPosiciones.x * razonFuerzas * escala;
+        float fuerzaBombaY = diferenciaPosiciones.y * razonFuerzas * hipotenusa * escala;
+
+        movimientoX = fuerzaBombaX;
+        movimientoY = fuerzaBombaY;
     }
 
     private void modificarTrayectoria(Vector3 rotacion, string tag)
