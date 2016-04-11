@@ -13,17 +13,25 @@ public class bomba : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        reiniciar();
         if (!posicionInicioEncontrada)
         {
             posicionInicio = transform.position;
             posicionInicioEncontrada = true;
         }
-        reiniciar();
 	}
 
     public void reiniciar()
     {
-        if(posicionInicioEncontrada)transform.position = posicionInicio;
+        if (posicionInicioEncontrada)
+        {
+
+            if (GetComponent<girarAlrededor>() != null)
+            {
+                GetComponent<girarAlrededor>().reiniciar();
+            }
+            transform.position = posicionInicio;
+        }
         borrar = false;
         t0 = 0;
     }

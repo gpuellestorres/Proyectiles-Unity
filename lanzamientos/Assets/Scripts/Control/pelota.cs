@@ -189,6 +189,11 @@ public class pelota : MonoBehaviour {
                     transform.position.y - other.transform.position.y);
             modificarTrayectoriaBomba(diferenciaPosiciones, other.transform.localScale.x);
             other.GetComponent<bomba>().borrar = true;
+
+            if (other.GetComponent<girarAlrededor>() != null)
+            {
+                other.GetComponent<girarAlrededor>().activo = false;
+            }
         }
     }
 
