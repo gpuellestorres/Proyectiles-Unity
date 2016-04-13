@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using System;
-using UnityEngine.UI;
+using UnityEngine.Advertisements;
 
 public class pelota : MonoBehaviour {
 
@@ -36,6 +34,19 @@ public class pelota : MonoBehaviour {
     
     // Use this for initialization
     void Start() {
+
+        int fasesJugadas = PlayerPrefs.GetInt("contadorFases");
+        if (fasesJugadas!=0 && fasesJugadas % 3 == 0)
+        {
+            Advertisement.Initialize("29239", true);
+
+            if (Advertisement.IsReady())
+            {
+                Advertisement.Show();
+            }
+        }
+        fasesJugadas++;
+        PlayerPrefs.SetInt("contadorFases", fasesJugadas);
 
         posicionInicial = transform.position;
         posicionInicialFlecha = Flecha.transform.position;
@@ -74,6 +85,11 @@ public class pelota : MonoBehaviour {
         foreach (bomba Bomba in FindObjectsOfType<bomba>())
         {
             Bomba.reiniciar();
+        }
+
+        foreach (horizontal Horizontal in FindObjectsOfType<horizontal>())
+        {
+            Horizontal.reiniciar();
         }
     }
 
@@ -114,9 +130,9 @@ public class pelota : MonoBehaviour {
                     || Input.GetButton("ps4_X") 
                     || presionandoFire)
                 {
-                    fuerza += 0.27f;
+                    fuerza += 13.5f * (tiempoActual - t0);
 
-                    int indiceObjetos = (int)(fuerza*2);
+                    int indiceObjetos = (int)(fuerza*4);
 
                     if (indiceObjetos >= objetosBencina.Length)
                     {
@@ -124,7 +140,8 @@ public class pelota : MonoBehaviour {
                         return;
                     }
 
-                    objetosBencina[indiceObjetos].position = new Vector2(-8, -4 + 0.28f * indiceObjetos);
+                    objetosBencina[indiceObjetos].position = new Vector3(-8, -4 + 0.14f * indiceObjetos, -1);
+                    if(indiceObjetos>0)objetosBencina[indiceObjetos-1].position = new Vector3(-8, -4 + 0.14f * (indiceObjetos-1), -1);
                 }
                 else
                 {
@@ -205,8 +222,8 @@ public class pelota : MonoBehaviour {
 
         float razonFuerzas = fuerzaBomba / hipotenusa;
 
-        float fuerzaBombaX = diferenciaPosiciones.x * razonFuerzas * escala;
-        float fuerzaBombaY = diferenciaPosiciones.y * razonFuerzas * hipotenusa * escala;
+        float fuerzaBombaX = diferenciaPosiciones.x * razonFuerzas * escala / 1.2f;
+        float fuerzaBombaY = diferenciaPosiciones.y * razonFuerzas * hipotenusa * escala / 1.2f;
 
         movimientoX = fuerzaBombaX;
         movimientoY = fuerzaBombaY;
@@ -230,13 +247,29 @@ public class pelota : MonoBehaviour {
         {
             normal += 90;
         }
+        else if (tag.Equals("abajo izquierda"))
+        {
+            normal += 45;
+        }
+        else if (tag.Equals("abajo derecha"))
+        {
+            normal += 135;
+        }
+        else if (tag.Equals("arriba izquierda"))
+        {
+            normal -= 45;
+        }
+        else if (tag.Equals("arriba derecha"))
+        {
+            normal -= 135;
+        }
 
         float fuerzaActual = movimientoX * movimientoX + movimientoY * movimientoY;
         fuerzaActual = Mathf.Sqrt(fuerzaActual);
 
         float fuerzaRebote = fuerzaActual * multiplicadorFuerzaRebote;
 
-        print(fuerzaRebote);
+        //print(fuerzaRebote);
 
         if (fuerzaRebote < minimoFuerzaRebote)
         {

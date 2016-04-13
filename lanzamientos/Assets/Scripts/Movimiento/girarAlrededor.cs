@@ -17,6 +17,8 @@ public class girarAlrededor : MonoBehaviour
     Vector2 posicionInicial;
 
     public bool activo=true;
+
+    bool iniciado = false;
     // Use this for initialization
     void Start()
     {
@@ -27,14 +29,21 @@ public class girarAlrededor : MonoBehaviour
             Mathf.Sqrt(
                 Mathf.Pow(transform.position.x - centro.x, 2) +
                 Mathf.Pow(transform.position.y - centro.y, 2));
+
+        print(distanciaAlCentro);
+        iniciado = true;
     }
 
     internal void reiniciar()
     {
-        activo = true;
-        transform.position = posicionInicial;
-        grados = Mathf.Rad2Deg * Mathf.Atan2(posicionInicial.y - centro.y, posicionInicial.x - centro.x);
-        print(grados);
+        if (iniciado)
+        {
+            activo = true;
+            transform.position = posicionInicial;
+            print(posicionInicial);
+            grados = Mathf.Rad2Deg * Mathf.Atan2(posicionInicial.y - centro.y, posicionInicial.x - centro.x);
+        }
+        
     }
 
     // Update is called once per frame
@@ -58,7 +67,7 @@ public class girarAlrededor : MonoBehaviour
         }
         transform.position =
             new Vector2(centro.x + Mathf.Cos(grados * Mathf.Deg2Rad) * distanciaAlCentro,
-            Mathf.Sin(centro.y + grados * Mathf.Deg2Rad) * distanciaAlCentro);
+            centro.y + Mathf.Sin(grados * Mathf.Deg2Rad) * distanciaAlCentro);
 
         t0 = tiempoActual;
     }

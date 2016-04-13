@@ -12,9 +12,19 @@ public class horizontal : MonoBehaviour {
 
     public int direccion = 1;
 
+    public bool reiniciarConProyectil = false;
+    Vector2 posicionInicio;
+    int direccionInicial = 1;
+
+    bool iniciado = false;
+
     // Use this for initialization
     void Start () {
         t0 = Time.timeSinceLevelLoad;
+        posicionInicio = transform.position;
+        direccionInicial = direccion;
+
+        iniciado = true;
     }
 	
 	// Update is called once per frame
@@ -46,6 +56,15 @@ public class horizontal : MonoBehaviour {
             transform.position = new Vector2(posicionX, transform.position.y);
 
             t0 = tiempoActual;
+        }
+    }
+
+    public void reiniciar()
+    {
+        if (reiniciarConProyectil && iniciado)
+        {
+            transform.position = posicionInicio;
+            direccion = direccionInicial;
         }
     }
 }
