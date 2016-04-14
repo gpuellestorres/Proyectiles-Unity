@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Advertisements;
+using System;
 
 public class pelota : MonoBehaviour {
+
+    public Transform ultimoColisionador;
 
     public float fuerza = 0;
     public float multiplicadorFuerza = 3;
@@ -185,6 +188,29 @@ public class pelota : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        trabajarColision(other, "enter");
+    }
+
+    void OnTriggerStay2D(Collider2D other)
+    {
+        trabajarColision(other, "stay");
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        trabajarColision(other, "exit");
+    }
+
+    private void trabajarColision(Collider2D other, string tipo)
+    {
+        if (tipo.Equals("exit"))
+        {
+            if (ultimoColisionador == other.transform)
+            {
+                ultimoColisionador = null;
+            }
+        }
+
         t0Choque = Time.timeSinceLevelLoad;
 
         //print("Colisión con objeto");
@@ -192,8 +218,9 @@ public class pelota : MonoBehaviour {
         {
             other.GetComponent<objetivo>().destruir();
         }
-        else if (other.GetComponent<obstaculo>() != null && !choque)
+        else if (other.GetComponent<obstaculo>() != null && !choque && ultimoColisionador != other.transform && tipo.Equals("enter"))
         {
+            ultimoColisionador = other.transform;
             choque = true;
             Vector3 rotacion = other.GetComponent<obstaculo>().transform.eulerAngles;
             modificarTrayectoria(rotacion, other.tag);
@@ -201,7 +228,7 @@ public class pelota : MonoBehaviour {
         else if (other.GetComponent<bomba>() != null && !choque)
         {
             choque = true;
-            Vector2 diferenciaPosiciones = 
+            Vector2 diferenciaPosiciones =
                 new Vector2(transform.position.x - other.transform.position.x,
                     transform.position.y - other.transform.position.y);
             modificarTrayectoriaBomba(diferenciaPosiciones, other.transform.localScale.x);
@@ -211,6 +238,10 @@ public class pelota : MonoBehaviour {
             {
                 other.GetComponent<girarAlrededor>().activo = false;
             }
+        }
+        else if (other.GetComponent<portalA>() != null && !choque)
+        {
+            transform.position = other.GetComponent<portalA>().portalB.transform.position;
         }
     }
 
