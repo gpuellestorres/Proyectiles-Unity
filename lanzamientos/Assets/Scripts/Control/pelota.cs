@@ -225,7 +225,7 @@ public class pelota : MonoBehaviour {
             Vector3 rotacion = other.GetComponent<obstaculo>().transform.eulerAngles;
             modificarTrayectoria(rotacion, other.tag);
         }
-        else if (other.GetComponent<bomba>() != null && !choque)
+        else if (other.GetComponent<bomba>() != null && other.GetComponent<bomba>().borrar!=true && !choque)
         {
             choque = true;
             Vector2 diferenciaPosiciones =
