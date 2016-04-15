@@ -46,7 +46,7 @@ public class pelota : MonoBehaviour {
             if (Advertisement.IsReady())
             {
                 Advertisement.Show();
-            }
+            }//*/
         }
         fasesJugadas++;
         PlayerPrefs.SetInt("contadorFases", fasesJugadas);
@@ -239,9 +239,12 @@ public class pelota : MonoBehaviour {
                 other.GetComponent<girarAlrededor>().activo = false;
             }
         }
-        else if (other.GetComponent<portalA>() != null && !choque)
+        else if (other.GetComponent<portalA>() != null && !choque && tipo.Equals("enter"))
         {
-            transform.position = other.GetComponent<portalA>().portalB.transform.position;
+            //Vector2 diferencia = new Vector2(other.transform.position.x - transform.position.x, other.transform.position.y - transform.position.y);
+            Vector2 diferencia = new Vector2(0, 0);
+            Transform portalB = other.GetComponent<portalA>().portalB.transform;
+            transform.position = new Vector2(portalB.position.x + diferencia.x, portalB.position.y + diferencia.y);
         }
     }
 
