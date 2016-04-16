@@ -5,9 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class objetivo : MonoBehaviour {
 
-    bool destruido = false;
+    public bool destruido = false;
     public float tiempoParaSiguienteNivel = 3;
-
+    bool cargandoEscena = false;
 
     private static AsyncOperation operation;
 
@@ -17,8 +17,10 @@ public class objetivo : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (destruido)
+        if (destruido && !cargandoEscena)
         {
+            cargandoEscena = true;
+            transform.position = new Vector2(-20, -20);
             cargarSiguienteNivel();
             destruido = false;
         }
@@ -26,6 +28,19 @@ public class objetivo : MonoBehaviour {
 
     private void cargarSiguienteNivel()
     {
+        int fasesJugadas = PlayerPrefs.GetInt("contadorFases");
+        if (fasesJugadas == 0)
+        {
+            fasesJugadas = 1;
+            PlayerPrefs.SetInt("contadorFases", fasesJugadas);
+        }
+        else
+        {
+            fasesJugadas++;
+            PlayerPrefs.SetInt("contadorFases", fasesJugadas);
+        }
+
+
         string nivelActual = SceneManager.GetActiveScene().name;
 
         char[] caracteres = nivelActual.ToCharArray();
@@ -55,11 +70,5 @@ public class objetivo : MonoBehaviour {
         }
 
         operation.allowSceneActivation = true;
-    }
-
-    public void destruir()
-    {
-        transform.position = new Vector2(-20,-20);
-        destruido = true;
     }
 }

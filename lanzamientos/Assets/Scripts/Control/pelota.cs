@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine.Advertisements;
 using System;
+using UnityEngine.SceneManagement;
 
 public class pelota : MonoBehaviour {
+
+    public float escalaTiempo = 1;
 
     public Transform ultimoColisionador;
 
@@ -38,7 +41,10 @@ public class pelota : MonoBehaviour {
     // Use this for initialization
     void Start() {
 
+        Time.timeScale = escalaTiempo;
+
         int fasesJugadas = PlayerPrefs.GetInt("contadorFases");
+        
         if (fasesJugadas!=0 && fasesJugadas % 3 == 0)
         {
             Advertisement.Initialize("29239", true);
@@ -46,10 +52,8 @@ public class pelota : MonoBehaviour {
             if (Advertisement.IsReady())
             {
                 Advertisement.Show();
-            }//*/
+            }
         }
-        fasesJugadas++;
-        PlayerPrefs.SetInt("contadorFases", fasesJugadas);
 
         posicionInicial = transform.position;
         posicionInicialFlecha = Flecha.transform.position;
@@ -103,11 +107,12 @@ public class pelota : MonoBehaviour {
 
         if (
             (Input.touchCount > 0 &&
-            (Input.GetTouch(0).position.x > Screen.width / 2 && Input.GetTouch(0).position.y < Screen.height / 2))
+            //(Input.GetTouch(0).position.x > Screen.width / 2 && Input.GetTouch(0).position.y < Screen.height / 2))
+            (Input.GetTouch(0).position.x > Screen.width / 2)
             ||
             (Input.touchCount > 1 &&
-            (Input.GetTouch(1).position.x > Screen.width / 2 && Input.GetTouch(1).position.y < Screen.height / 2))
-            )
+            //(Input.GetTouch(1).position.x > Screen.width / 2 && Input.GetTouch(1).position.y < Screen.height / 2))
+            (Input.GetTouch(1).position.x > Screen.width / 2))))
         {
             presionandoFire = true;
         }
@@ -214,9 +219,9 @@ public class pelota : MonoBehaviour {
         t0Choque = Time.timeSinceLevelLoad;
 
         //print("Colisión con objeto");
-        if (other.GetComponent<objetivo>() != null)
+        if (other.GetComponent<objetivo>() != null && tipo!="enter" && !other.GetComponent<objetivo>().destruido)
         {
-            other.GetComponent<objetivo>().destruir();
+            other.GetComponent<objetivo>().destruido = true;
         }
         else if (other.GetComponent<obstaculo>() != null && !choque && ultimoColisionador != other.transform && tipo.Equals("enter"))
         {

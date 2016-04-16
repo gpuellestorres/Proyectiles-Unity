@@ -8,13 +8,15 @@ public class aparicionStick : MonoBehaviour {
     float valorTransparencia = 0.5f;
     bool subir = true;
 
+    public float velocidad = 0.01f;
+
     SpriteRenderer elRenderer;
 
 	// Use this for initialization
 	void Start () {
         elRenderer = GetComponent<SpriteRenderer>();
 
-        if (Application.platform != RuntimePlatform.Android)
+        if (Application.platform != RuntimePlatform.Android && Application.platform != RuntimePlatform.WindowsEditor)
         {
             finEjecucion();
         }
@@ -28,13 +30,13 @@ public class aparicionStick : MonoBehaviour {
             
             if (subir)
             {
-                valorTransparencia+=0.005f;
+                valorTransparencia+= velocidad * Time.deltaTime;
                 if (valorTransparencia >= 0.6f) subir = !subir;
             }
             else
             {
-                valorTransparencia-=0.005f;
-                if (valorTransparencia <= 0.3f) subir = !subir;
+                valorTransparencia -= velocidad * Time.deltaTime;
+                if (valorTransparencia <= 0.01f) subir = !subir;
             }
         }
 
