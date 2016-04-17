@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System;
 
 public class Menu : MonoBehaviour {
 
@@ -13,17 +14,20 @@ public class Menu : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
+        if (PlayerPrefs.GetString("mayorEscenaDisponible").Equals(""))
+        {
+            PlayerPrefs.SetString("mayorEscenaDisponible", "A1");
+        }	
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetButton("Start")) inicio();
+        if (Input.GetButton("Start")) cargarNivel();
 	}
 
-    public void inicio()
+    public void cerrar()
     {
-        SceneManager.LoadScene(escenaElegida);
+        Application.Quit();
     }
 
     public void avanzarEscena()
@@ -45,6 +49,11 @@ public class Menu : MonoBehaviour {
         {
             escenaElegida = letraActual + (numeroActual + 1);
         }
+        if (!estaDisponible(escenaElegida))
+        {
+            retrocederEscena();
+            return;
+        }
 
         nivelActual.text = escenaElegida;
 
@@ -54,6 +63,32 @@ public class Menu : MonoBehaviour {
         }
 
         Instantiate(Resources.Load("ImgNiveles/" + escenaElegida));
+    }
+
+    private bool estaDisponible(string escenaElegida)
+    {
+        string letraActual = escenaElegida.Substring(0, 1);
+        string num = escenaElegida.Substring(1, escenaElegida.Length - 1);
+
+        string mayorDisp = PlayerPrefs.GetString("mayorEscenaDisponible");
+
+        string letraDisp = mayorDisp.Substring(0, 1);
+        string numDisp = mayorDisp.Substring(1, mayorDisp.Length - 1);
+
+        if (letraActual.ToCharArray()[0] > letraDisp.ToCharArray()[0])
+        {
+            return false;
+        }
+        else
+        {
+            if (letraActual == letraDisp)
+            {
+                if (int.Parse(num) > int.Parse(numDisp)) return false;
+                return true;
+            }
+            else return true;
+        }
+
     }
 
     public void retrocederEscena()
@@ -88,5 +123,6 @@ public class Menu : MonoBehaviour {
 
     public void cargarNivel()
     {
+        SceneManager.LoadScene(escenaElegida);
     }
 }

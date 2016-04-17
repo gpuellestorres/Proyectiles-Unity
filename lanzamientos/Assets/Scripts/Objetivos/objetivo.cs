@@ -58,10 +58,12 @@ public class objetivo : MonoBehaviour {
 
         if (Application.CanStreamedLevelBeLoaded(letra + "" + num))
         {
+            PlayerPrefs.SetString("mayorEscenaDisponible", letra + "" + num);
             operation = SceneManager.LoadSceneAsync(letra + "" + num);
         }
         else if (Application.CanStreamedLevelBeLoaded((++letra) + "1"))
         {
+            PlayerPrefs.SetString("mayorEscenaDisponible", (letra) + "1");
             operation = SceneManager.LoadSceneAsync((letra) + "1");
         }
         else

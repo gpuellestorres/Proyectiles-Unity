@@ -85,7 +85,7 @@ public class pelota : MonoBehaviour {
 
         transform.position = posicionInicial;
 
-        Flecha.transform.position = posicionInicialFlecha;
+        //Flecha.transform.position = posicionInicialFlecha;
         Flecha.controlarPosicion = true;
 
 
@@ -148,8 +148,8 @@ public class pelota : MonoBehaviour {
                         return;
                     }
 
-                    objetosBencina[indiceObjetos].position = new Vector3(-8, -4 + 0.14f * indiceObjetos, -1);
-                    if(indiceObjetos>0)objetosBencina[indiceObjetos-1].position = new Vector3(-8, -4 + 0.14f * (indiceObjetos-1), -1);
+                    objetosBencina[indiceObjetos].position = new Vector3(-7.6f, -4 + 0.14f * indiceObjetos, -1);
+                    if(indiceObjetos>0)objetosBencina[indiceObjetos-1].position = new Vector3(-7.6f, -4 + 0.14f * (indiceObjetos-1), -1);
                 }
                 else
                 {
