@@ -49,7 +49,8 @@ public class puntero : MonoBehaviour {
         else if (Input.touchCount > 0)
         {
             if (Input.touchCount > 0 &&
-            (Input.GetTouch(0).position.x < Screen.width / 2 && Input.GetTouch(0).position.y < Screen.height / 2))
+            //(Input.GetTouch(0).position.x < Screen.width / 2 && Input.GetTouch(0).position.y < Screen.height / 2))
+            (Input.GetTouch(0).position.x < Screen.width / 2))
             {
                 Touch touchActual = Input.GetTouch(0);
                 if (touchActual.phase != TouchPhase.Began && empezar)

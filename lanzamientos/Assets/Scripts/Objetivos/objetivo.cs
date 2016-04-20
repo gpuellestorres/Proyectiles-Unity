@@ -11,16 +11,37 @@ public class objetivo : MonoBehaviour {
 
     private static AsyncOperation operation;
 
+    AudioSource sonidoExito;
+
     // Use this for initialization
     void Start () {	
+        
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+        if (sonidoExito == null)
+        {
+            foreach (AudioSource Sonido in FindObjectsOfType<AudioSource>())
+            {
+                print(Sonido.name);
+                if (Sonido.name.Equals("sonidoObjetivo(Clone)"))
+                    sonidoExito = Sonido;
+            }
+            
+        }
+
         if (destruido && !cargandoEscena)
         {
-            cargandoEscena = true;
             transform.position = new Vector2(-20, -20);
+            if (sonidoExito.isPlaying)
+            {
+                Time.timeScale = 0;
+                return;
+            }
+
+            cargandoEscena = true;
             cargarSiguienteNivel();
             destruido = false;
         }
@@ -58,12 +79,12 @@ public class objetivo : MonoBehaviour {
 
         if (Application.CanStreamedLevelBeLoaded(letra + "" + num))
         {
-            PlayerPrefs.SetString("mayorEscenaDisponible", letra + "" + num);
+            guardarMayorDisponible(letra + "" + num);
             operation = SceneManager.LoadSceneAsync(letra + "" + num);
         }
         else if (Application.CanStreamedLevelBeLoaded((++letra) + "1"))
         {
-            PlayerPrefs.SetString("mayorEscenaDisponible", (letra) + "1");
+            guardarMayorDisponible((letra) + "1");
             operation = SceneManager.LoadSceneAsync((letra) + "1");
         }
         else
@@ -72,5 +93,37 @@ public class objetivo : MonoBehaviour {
         }
 
         operation.allowSceneActivation = true;
+    }
+
+    private void guardarMayorDisponible(string nivel)
+    {
+        if (esMayorAMayorDisponible(nivel))
+            PlayerPrefs.SetString("mayorEscenaDisponible", nivel);
+    }
+
+    private bool esMayorAMayorDisponible(string escenaCargar)
+    {
+        string letraActual = escenaCargar.Substring(0, 1);
+        string num = escenaCargar.Substring(1, escenaCargar.Length - 1);
+
+        string mayorDisp = PlayerPrefs.GetString("mayorEscenaDisponible");
+
+        string letraDisp = mayorDisp.Substring(0, 1);
+        string numDisp = mayorDisp.Substring(1, mayorDisp.Length - 1);
+
+        if (letraActual.ToCharArray()[0] > letraDisp.ToCharArray()[0])
+        {
+            return true;
+        }
+        else
+        {
+            if (letraActual == letraDisp)
+            {
+                if (int.Parse(num) > int.Parse(numDisp)) return true;
+                return false;
+            }
+            else return false;
+        }
+
     }
 }

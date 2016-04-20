@@ -9,7 +9,17 @@ public class mostrarNivel : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        Texto = FindObjectOfType<Text>();
+
+        Text[] textos = FindObjectsOfType<Text>();
+
+        foreach (Text texto in textos)
+        {
+            if (texto.name == "Text")
+            {
+                Texto = texto;
+            }
+        }
+
         string escena= SceneManager.GetActiveScene().name;
 
         if (escena != "Menu")

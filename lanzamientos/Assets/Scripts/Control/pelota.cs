@@ -37,7 +37,14 @@ public class pelota : MonoBehaviour {
 
     Vector3 posicionInicial;
     Vector3 posicionInicialFlecha;
-    
+
+
+    public AudioSource sonidoRebote;
+    public AudioSource sonidoBomba;
+    public AudioSource sonidoPortal;
+    public AudioSource sonidoObjetivo;
+    public AudioSource sonidoReiniciar;
+
     // Use this for initialization
     void Start() {
 
@@ -45,7 +52,7 @@ public class pelota : MonoBehaviour {
 
         int fasesJugadas = PlayerPrefs.GetInt("contadorFases");
         
-        if (fasesJugadas!=0 && fasesJugadas % 3 == 0)
+        if (fasesJugadas!=0 && fasesJugadas % 4 == 0)
         {
             Advertisement.Initialize("29239", true);
 
@@ -67,6 +74,12 @@ public class pelota : MonoBehaviour {
         }
 
         objetosBencina = objsBenc.ToArray();
+
+        sonidoBomba = Instantiate(sonidoBomba);
+        sonidoRebote = Instantiate(sonidoRebote);
+        sonidoPortal = Instantiate(sonidoPortal);
+        sonidoObjetivo = Instantiate(sonidoObjetivo);
+        sonidoReiniciar = Instantiate(sonidoReiniciar);        
 
         reiniciar();
         
@@ -178,8 +191,12 @@ public class pelota : MonoBehaviour {
                 movimientoY -= gravedad * diferenciaTiempo;
             }
 
-            if (transform.position.y < -6 || transform.position.y > 6 || transform.position.x > 10 || transform.position.x < -10)
+            if (transform.position.y < -6 || transform.position.y > 7 || transform.position.x > 10 || transform.position.x < -10)
+            {
+                sonidoReiniciar.Play();
                 reiniciar();
+            }
+
 
             if (choque)
             {
@@ -221,7 +238,8 @@ public class pelota : MonoBehaviour {
         //print("Colisión con objeto");
         if (other.GetComponent<objetivo>() != null && tipo!="enter" && !other.GetComponent<objetivo>().destruido)
         {
-            other.GetComponent<objetivo>().destruido = true;
+            sonidoObjetivo.Play();
+            other.GetComponent<objetivo>().destruido = true;            
         }
         else if (other.GetComponent<obstaculo>() != null && !choque && ultimoColisionador != other.transform && tipo.Equals("enter"))
         {
@@ -229,6 +247,7 @@ public class pelota : MonoBehaviour {
             choque = true;
             Vector3 rotacion = other.GetComponent<obstaculo>().transform.eulerAngles;
             modificarTrayectoria(rotacion, other.tag);
+            sonidoRebote.Play();
         }
         else if (other.GetComponent<bomba>() != null && other.GetComponent<bomba>().borrar!=true && !choque)
         {
@@ -243,6 +262,8 @@ public class pelota : MonoBehaviour {
             {
                 other.GetComponent<girarAlrededor>().activo = false;
             }
+
+            sonidoBomba.Play();
         }
         else if (other.GetComponent<portalA>() != null && !choque && tipo.Equals("enter"))
         {
@@ -250,6 +271,7 @@ public class pelota : MonoBehaviour {
             Vector2 diferencia = new Vector2(0, 0);
             Transform portalB = other.GetComponent<portalA>().portalB.transform;
             transform.position = new Vector2(portalB.position.x + diferencia.x, portalB.position.y + diferencia.y);
+            sonidoPortal.Play();
         }
     }
 
