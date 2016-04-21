@@ -19,7 +19,6 @@ public class cerrar : MonoBehaviour {
         {
             if (texto.name == "textoSalir")
             {
-                print("aqui");
                 textoSalir = texto;
                 quitarMensaje();
             }

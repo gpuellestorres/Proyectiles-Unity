@@ -35,9 +35,9 @@ public class objetivo : MonoBehaviour {
         if (destruido && !cargandoEscena)
         {
             transform.position = new Vector2(-20, -20);
-            if (sonidoExito.isPlaying)
+            Time.timeScale = 0;
+            if (sonidoExito.isPlaying && !AudioListener.pause)
             {
-                Time.timeScale = 0;
                 return;
             }
 
@@ -50,17 +50,9 @@ public class objetivo : MonoBehaviour {
     private void cargarSiguienteNivel()
     {
         int fasesJugadas = PlayerPrefs.GetInt("contadorFases");
-        if (fasesJugadas == 0)
-        {
-            fasesJugadas = 1;
-            PlayerPrefs.SetInt("contadorFases", fasesJugadas);
-        }
-        else
-        {
-            fasesJugadas++;
-            PlayerPrefs.SetInt("contadorFases", fasesJugadas);
-        }
 
+        fasesJugadas++;
+        PlayerPrefs.SetInt("contadorFases", fasesJugadas);
 
         string nivelActual = SceneManager.GetActiveScene().name;
 
@@ -103,6 +95,8 @@ public class objetivo : MonoBehaviour {
 
     private bool esMayorAMayorDisponible(string escenaCargar)
     {
+        if (PlayerPrefs.GetString("mayorEscenaDisponible") == "") return true;
+
         string letraActual = escenaCargar.Substring(0, 1);
         string num = escenaCargar.Substring(1, escenaCargar.Length - 1);
 

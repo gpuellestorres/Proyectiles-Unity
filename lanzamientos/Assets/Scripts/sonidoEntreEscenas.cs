@@ -40,6 +40,10 @@ public class sonidoEntreEscenas : MonoBehaviour {
             sonido.clip = obtenerMusicaAlAzar();
             sonido.Play();
         }
+        else if (SceneManager.GetActiveScene().name.Equals("Menu"))
+        {
+            sonido.Stop();
+        }
     }
 
     private AudioClip obtenerMusicaAlAzar()

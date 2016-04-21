@@ -14,6 +14,7 @@ public class pelota : MonoBehaviour {
     public float multiplicadorFuerza = 3;
     public float multiplicadorFuerzaRebote = 1.5f;
     public float fuerzaBomba = 3.5f;
+    public float fuerzaGravedad = 0.5f;
     public float gravedad = 2;
     public float minimoFuerzaRebote = 1;
 
@@ -26,7 +27,7 @@ public class pelota : MonoBehaviour {
     public float tiempoRefresco = 0.01f;
     float t0;
 
-    bool movimiento = false;
+    public bool movimiento = false;
     bool inicioMovimiento = false;
 
     bool choque = false;
@@ -38,17 +39,25 @@ public class pelota : MonoBehaviour {
     Vector3 posicionInicial;
     Vector3 posicionInicialFlecha;
 
-
     public AudioSource sonidoRebote;
     public AudioSource sonidoBomba;
     public AudioSource sonidoPortal;
     public AudioSource sonidoObjetivo;
     public AudioSource sonidoReiniciar;
 
+    public Transform botonDisparar;
+    SpriteRenderer spriteBotonBomba;
+    Color original, alternativo;
+    
+    Camera camara;
+
+    Gravedad[] Gravedad;
     // Use this for initialization
     void Start() {
 
         Time.timeScale = escalaTiempo;
+
+        camara = FindObjectOfType<Camera>();
 
         int fasesJugadas = PlayerPrefs.GetInt("contadorFases");
         
@@ -60,6 +69,7 @@ public class pelota : MonoBehaviour {
             {
                 Advertisement.Show();
             }
+            PlayerPrefs.SetInt("contadorFases", 0);
         }
 
         posicionInicial = transform.position;
@@ -79,10 +89,21 @@ public class pelota : MonoBehaviour {
         sonidoRebote = Instantiate(sonidoRebote);
         sonidoPortal = Instantiate(sonidoPortal);
         sonidoObjetivo = Instantiate(sonidoObjetivo);
-        sonidoReiniciar = Instantiate(sonidoReiniciar);        
+        sonidoReiniciar = Instantiate(sonidoReiniciar);
 
-        reiniciar();
-        
+        if (Application.platform == RuntimePlatform.Android)
+        {
+            botonDisparar = Instantiate(botonDisparar);
+
+            spriteBotonBomba = botonDisparar.GetComponent<SpriteRenderer>();
+
+            original = spriteBotonBomba.color;
+            alternativo = new Color(original.a, original.g, original.b, 190f / 255);
+        }
+
+        Gravedad = FindObjectsOfType<Gravedad>();
+
+        reiniciar();        
 	}
 
     void reiniciar()
@@ -118,7 +139,30 @@ public class pelota : MonoBehaviour {
     {
         bool presionandoFire = false;
 
-        if (
+        if (Input.touchCount > 0)
+        {
+            foreach (RaycastHit2D hit in Physics2D.RaycastAll(camara.ScreenToWorldPoint(Input.touches[0].position), Vector3.forward))
+                if (hit.collider.name.Equals("Fire2(Clone)"))
+                {
+                    spriteBotonBomba.color = alternativo;
+                    presionandoFire = true;
+                }
+        }
+        else if (RuntimePlatform.Android==Application.platform)
+        {
+            spriteBotonBomba.color = original;
+        }
+        if (Input.touchCount > 1)
+        {
+            foreach (RaycastHit2D hit in Physics2D.RaycastAll(camara.ScreenToWorldPoint(Input.touches[1].position), -Vector2.up))
+                if (hit.collider.name.Equals("Fire2(Clone)"))
+                {
+                    spriteBotonBomba.color = alternativo;
+                    presionandoFire = true;
+                }
+        }
+
+        /*if (
             (Input.touchCount > 0 &&
             //(Input.GetTouch(0).position.x > Screen.width / 2 && Input.GetTouch(0).position.y < Screen.height / 2))
             (Input.GetTouch(0).position.x > Screen.width / 2)
@@ -128,7 +172,7 @@ public class pelota : MonoBehaviour {
             (Input.GetTouch(1).position.x > Screen.width / 2))))
         {
             presionandoFire = true;
-        }
+        }//*/
 
         if (((Application.platform!=RuntimePlatform.Android && Input.GetMouseButtonDown(0)) 
             || Input.GetButtonDown("ps4_X") 
@@ -178,6 +222,24 @@ public class pelota : MonoBehaviour {
 
         if (movimiento)
         {
+            float influenciaGravedadX = 0,
+                influenciaGravedadY=0;
+
+            foreach (Gravedad gravedad in Gravedad)
+            {
+                float distancia = Mathf.Pow(gravedad.transform.position.x - transform.position.x, 2) + Mathf.Pow(gravedad.transform.position.y - transform.position.y, 2);
+                distancia = Mathf.Sqrt(distancia);
+                float razonX = (gravedad.transform.position.x - transform.position.x) / distancia;
+                float razonY = (gravedad.transform.position.y - transform.position.y) / distancia;
+
+                print(razonX + " - " + razonY);
+
+                influenciaGravedadX += fuerzaGravedad * gravedad.transform.localScale.x * razonX / distancia;
+                influenciaGravedadY += fuerzaGravedad * gravedad.transform.localScale.y * razonY / distancia;
+            }
+
+            //print(influenciaGravedadX + " - " + influenciaGravedadY);
+
             Flecha.controlarPosicion = false;
             Flecha.transform.position = new Vector2(-20, -20);
 
@@ -185,8 +247,8 @@ public class pelota : MonoBehaviour {
             {
                 float diferenciaTiempo = tiempoActual - t0;
 
-                transform.position = new Vector2(transform.position.x + movimientoX * diferenciaTiempo,
-                    transform.position.y + movimientoY * diferenciaTiempo);
+                transform.position = new Vector2(transform.position.x + movimientoX * diferenciaTiempo + influenciaGravedadX,
+                    transform.position.y + movimientoY * diferenciaTiempo + influenciaGravedadY);
                 t0 = Time.timeSinceLevelLoad;
                 movimientoY -= gravedad * diferenciaTiempo;
             }
@@ -273,6 +335,11 @@ public class pelota : MonoBehaviour {
             transform.position = new Vector2(portalB.position.x + diferencia.x, portalB.position.y + diferencia.y);
             sonidoPortal.Play();
         }
+        else if (other.GetComponent<Gravedad>() != null)
+        {
+            sonidoReiniciar.Play();
+            reiniciar();
+        }
     }
 
     private void modificarTrayectoriaBomba(Vector2 diferenciaPosiciones, float escala)
@@ -337,7 +404,10 @@ public class pelota : MonoBehaviour {
             fuerzaRebote = minimoFuerzaRebote;
         }
 
-        movimientoX = Mathf.Cos(Mathf.Deg2Rad * normal) * fuerzaRebote + movimientoX;
-        movimientoY = Mathf.Sin(Mathf.Deg2Rad * normal) * fuerzaRebote + movimientoY;
+        float cambioX = Mathf.Cos(Mathf.Deg2Rad * normal) * fuerzaRebote;
+        float cambioY = Mathf.Sin(Mathf.Deg2Rad * normal) * fuerzaRebote;
+
+        movimientoX = cambioX + movimientoX;
+        movimientoY = cambioY + movimientoY;
     }
 }
