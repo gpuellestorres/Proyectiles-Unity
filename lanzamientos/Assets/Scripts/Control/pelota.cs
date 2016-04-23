@@ -229,8 +229,8 @@ public class pelota : MonoBehaviour {
             {
                 float distancia = Mathf.Pow(gravedad.transform.position.x - transform.position.x, 2) + Mathf.Pow(gravedad.transform.position.y - transform.position.y, 2);
                 distancia = Mathf.Sqrt(distancia);
-                float razonX = (gravedad.transform.position.x - transform.position.x) / distancia;
-                float razonY = (gravedad.transform.position.y - transform.position.y) / distancia;
+                float razonX = (gravedad.transform.position.x - transform.position.x) / (distancia * distancia);
+                float razonY = (gravedad.transform.position.y - transform.position.y) / (distancia * distancia);
 
                 print(razonX + " - " + razonY);
 

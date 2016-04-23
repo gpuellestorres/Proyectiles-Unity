@@ -65,7 +65,6 @@ public class Menu : MonoBehaviour {
     {
         string letraActual = escenaElegida.Substring(0, 1);
         string num = escenaElegida.Substring(1, escenaElegida.Length - 1);
-        print(num);
         int numeroActual = int.Parse(escenaElegida.Substring(1, escenaElegida.Length - 1));
         if (numeroActual >= mayorNumero)
         {

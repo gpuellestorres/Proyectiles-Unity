@@ -7,11 +7,9 @@ public class agrandar : MonoBehaviour {
     public float periodo = 0.1f;
     float t0;
 
-    public float tamañoReinicioX = 0.1f;
-    public float tamañoReinicioY = 0.1f;
+    public float tamañoMinimo = 0.1f;
 
-    public float tamañoReiniciarX = 2.6f;
-    public float tamañoReiniciarY = 2.6f;
+    public float tamañoMaximo = 2.6f;
 
     // Use this for initialization
     void Start () {
@@ -30,10 +28,9 @@ public class agrandar : MonoBehaviour {
             t0 = tiempoActual;
         }
 
-        if (transform.localScale.x >= tamañoReiniciarX
-            || transform.localScale.y>=tamañoReiniciarY)
+        if (transform.localScale.x >= tamañoMaximo || transform.localScale.x<=tamañoMinimo)
         {
-            transform.localScale = new Vector2(tamañoReinicioX, tamañoReinicioY);
+            velocidad = -velocidad;
         }
 	}
 }

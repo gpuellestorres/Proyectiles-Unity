@@ -74,6 +74,7 @@
     <Compile Include="Assets\Scripts\Menu.cs" />
     <Compile Include="Assets\Scripts\Movimiento\girar.cs" />
     <Compile Include="Assets\Scripts\Movimiento\girarAlrededor.cs" />
+    <Compile Include="Assets\Scripts\Movimiento\girarAlrededorOscilante.cs" />
     <Compile Include="Assets\Scripts\Movimiento\horizontal.cs" />
     <Compile Include="Assets\Scripts\Movimiento\pruebaParaAndroid.cs" />
     <Compile Include="Assets\Scripts\Movimiento\vertical.cs" />

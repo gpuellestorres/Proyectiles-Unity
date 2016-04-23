@@ -80,7 +80,6 @@ public class puntero : MonoBehaviour {
                     objetoColision = hit.collider.gameObject.name;
                 }
         }
-
         if ((Input.GetAxis("Mouse X") != 0 || Input.GetAxis("Mouse X") != 0) && Application.platform != RuntimePlatform.Android)
         {
             Vector2 mousePosition = Input.mousePosition;
