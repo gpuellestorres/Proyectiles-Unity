@@ -98,7 +98,7 @@ public class puntero : MonoBehaviour {
             float posY = transform.position.y;
             if (objetoColision.Equals("flechaControlIzq(Clone)"))
             {
-                posX -= 0.05f;
+                posX -= 0.03f;
                 flechaDerRend.color = alternativo;
             }
             else
@@ -107,7 +107,7 @@ public class puntero : MonoBehaviour {
             }
             if (objetoColision.Equals("flechaControlDer(Clone)"))
             {
-                posX += 0.05f;
+                posX += 0.03f;
                 flechaIzqRend.color = alternativo;
             }
             else

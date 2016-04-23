@@ -63,7 +63,7 @@ public class pelota : MonoBehaviour {
         
         if (fasesJugadas!=0 && fasesJugadas % 4 == 0)
         {
-            Advertisement.Initialize("29239", true);
+            Advertisement.Initialize("1058782", true);
 
             if (Advertisement.IsReady())
             {
@@ -132,6 +132,8 @@ public class pelota : MonoBehaviour {
         {
             Horizontal.reiniciar();
         }
+
+        FindObjectOfType<estrella>().volverPosicionInicial();
     }
 
     // Update is called once per frame
@@ -339,6 +341,11 @@ public class pelota : MonoBehaviour {
         {
             sonidoReiniciar.Play();
             reiniciar();
+        }
+        else if (other.GetComponent<estrella>() != null && !choque && tipo.Equals("enter"))
+        {
+            //Vector2 diferencia = new Vector2(other.transform.position.x - transform.position.x, other.transform.position.y - transform.position.y);
+            other.transform.position = new Vector2(-20, -20);
         }
     }
 

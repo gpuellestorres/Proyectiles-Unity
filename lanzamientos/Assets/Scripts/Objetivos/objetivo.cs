@@ -49,6 +49,12 @@ public class objetivo : MonoBehaviour {
 
     private void cargarSiguienteNivel()
     {
+        //Se guarda si se encontró la estrella
+        if(FindObjectOfType<estrella>().encontrada())
+        PlayerPrefs.SetString("estrella" + SceneManager.GetActiveScene().name, "true");
+
+        //Se carga el siguiente nivel
+
         int fasesJugadas = PlayerPrefs.GetInt("contadorFases");
 
         fasesJugadas++;
@@ -89,6 +95,7 @@ public class objetivo : MonoBehaviour {
 
     private void guardarMayorDisponible(string nivel)
     {
+        PlayerPrefs.SetString("ultimaEscenaJugada", nivel);
         if (esMayorAMayorDisponible(nivel))
             PlayerPrefs.SetString("mayorEscenaDisponible", nivel);
     }

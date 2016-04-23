@@ -14,6 +14,8 @@ public class Menu : MonoBehaviour {
 
     public sonidoEntreEscenas sonidoNiveles;
 
+    public Transform estrella;
+
 	// Use this for initialization
 	void Start () {
         Time.timeScale = 1;
@@ -36,23 +38,43 @@ public class Menu : MonoBehaviour {
         {
             PlayerPrefs.SetString("mayorEscenaDisponible", "A1");
         }
+        else if (!PlayerPrefs.GetString("ultimaEscenaJugada").Equals(""))
+        {
+            escenaElegida = PlayerPrefs.GetString("ultimaEscenaJugada");
+
+            mostrarEscenaElegida();
+        }
         else
         {
             escenaElegida = PlayerPrefs.GetString("mayorEscenaDisponible");
 
-            nivelActual.text = escenaElegida;
-
-            foreach (imagenNivel IMG in FindObjectsOfType<imagenNivel>())
-            {
-                Destroy(IMG.gameObject);
-            }
-
-            Instantiate(Resources.Load("ImgNiveles/" + escenaElegida));
+            mostrarEscenaElegida();
         }	
 	}
-	
-	// Update is called once per frame
-	void Update () {
+
+    private void mostrarEscenaElegida()
+    {
+        nivelActual.text = escenaElegida;
+
+        foreach (imagenNivel IMG in FindObjectsOfType<imagenNivel>())
+        {
+            Destroy(IMG.gameObject);
+        }
+
+        Instantiate(Resources.Load("ImgNiveles/" + escenaElegida));
+
+        if (PlayerPrefs.GetString("estrella" + escenaElegida).Equals("true"))
+        {
+            estrella.position = new Vector3(3.7f, 3.1f, -4);
+        }
+        else
+        {
+            estrella.position = new Vector2(-20, -20);
+        }
+    }
+
+    // Update is called once per frame
+    void Update () {
         if (Input.GetButton("Start")) cargarNivel();
 	}
 
@@ -85,14 +107,7 @@ public class Menu : MonoBehaviour {
             return;
         }
 
-        nivelActual.text = escenaElegida;
-
-        foreach (imagenNivel IMG in FindObjectsOfType<imagenNivel>())
-        {
-            Destroy(IMG.gameObject);
-        }
-
-        Instantiate(Resources.Load("ImgNiveles/" + escenaElegida));
+        mostrarEscenaElegida();
     }
 
     private bool estaDisponible(string escenaElegida)
@@ -141,14 +156,7 @@ public class Menu : MonoBehaviour {
             escenaElegida = letraActual + (numeroActual - 1);
         }
 
-        nivelActual.text = escenaElegida;
-
-        foreach (imagenNivel IMG in FindObjectsOfType<imagenNivel>())
-        {
-            Destroy(IMG.gameObject);
-        }
-
-        Instantiate(Resources.Load("ImgNiveles/" + escenaElegida));
+        mostrarEscenaElegida();
     }
 
     public void cargarNivel()

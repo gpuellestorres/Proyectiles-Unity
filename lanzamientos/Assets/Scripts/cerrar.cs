@@ -39,7 +39,7 @@ public class cerrar : MonoBehaviour {
             }
             else if (Time.timeSinceLevelLoad < t0 + tiempoDobleCierre)
             {
-                //Application.Quit();
+                PlayerPrefs.SetString("ultimaEscenaJugada", SceneManager.GetActiveScene().name);
                 SceneManager.LoadScene("Menu");
             }
             else {
