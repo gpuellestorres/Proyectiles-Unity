@@ -2,6 +2,7 @@
 using System.Collections;
 using System;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class objetivo : MonoBehaviour {
 
@@ -11,21 +12,49 @@ public class objetivo : MonoBehaviour {
 
     private static AsyncOperation operation;
 
+    public Button Reintentar;
+    public Button Siguiente;
+    Vector3 posicionSiguiente, posicionReintentar;
+    public Transform fondoNegro;
+
     AudioSource sonidoExito;
 
     // Use this for initialization
-    void Start () {	
-        
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    void Start () {
+        foreach (Button boton in FindObjectsOfType<Button>())
+        {
+            if (boton.name.Equals("NEXT"))
+            {
+                Reintentar = boton;
+                posicionReintentar = new Vector3(Reintentar.transform.position.x, Reintentar.transform.position.y, -9.5f);
+
+                Reintentar.transform.position = new Vector2(-5000, -5000);
+            }
+            else if (boton.name.Equals("RETRY"))
+            {
+                Siguiente = boton;
+                posicionSiguiente = new Vector3(Siguiente.transform.position.x, Siguiente.transform.position.y, -9.5f);
+
+                Siguiente.transform.position = new Vector2(-5000, -5000);
+            }
+        }
+    }
+
+    public void cargarEsteNivel()
+    {
+        Reintentar.onClick.RemoveAllListeners();
+
+        operation = SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name);
+        operation.allowSceneActivation = true;        
+    }
+
+    // Update is called once per frame
+    void Update () {
 
         if (sonidoExito == null)
         {
             foreach (AudioSource Sonido in FindObjectsOfType<AudioSource>())
             {
-                print(Sonido.name);
                 if (Sonido.name.Equals("sonidoObjetivo(Clone)"))
                     sonidoExito = Sonido;
             }
@@ -36,19 +65,26 @@ public class objetivo : MonoBehaviour {
         {
             transform.position = new Vector2(-20, -20);
             Time.timeScale = 0;
+
             if (sonidoExito.isPlaying && !AudioListener.pause)
             {
                 return;
             }
 
+            Reintentar.transform.position = posicionReintentar;
+            Siguiente.transform.position = posicionSiguiente;
+
+            Instantiate(fondoNegro);
+
             cargandoEscena = true;
-            cargarSiguienteNivel();
             destruido = false;
         }
 	}
 
-    private void cargarSiguienteNivel()
+    public void cargarSiguienteNivel()
     {
+        Siguiente.onClick.RemoveAllListeners();
+
         //Se guarda si se encontró la estrella
         if(FindObjectOfType<estrella>().encontrada())
         PlayerPrefs.SetString("estrella" + SceneManager.GetActiveScene().name, "true");

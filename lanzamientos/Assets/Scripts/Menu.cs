@@ -37,12 +37,16 @@ public class Menu : MonoBehaviour {
         if (PlayerPrefs.GetString("mayorEscenaDisponible").Equals(""))
         {
             PlayerPrefs.SetString("mayorEscenaDisponible", "A1");
+            escenaElegida = "A1";
+            mostrarEscenaElegida();
         }
         else if (!PlayerPrefs.GetString("ultimaEscenaJugada").Equals(""))
         {
             escenaElegida = PlayerPrefs.GetString("ultimaEscenaJugada");
 
             mostrarEscenaElegida();
+
+            PlayerPrefs.SetString("ultimaEscenaJugada", PlayerPrefs.GetString("mayorEscenaDisponible"));
         }
         else
         {

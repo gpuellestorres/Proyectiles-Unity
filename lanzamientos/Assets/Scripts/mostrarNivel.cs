@@ -14,7 +14,7 @@ public class mostrarNivel : MonoBehaviour {
 
         foreach (Text texto in textos)
         {
-            if (texto.name == "Text")
+            if (texto.name == "NombreNivel")
             {
                 Texto = texto;
             }
