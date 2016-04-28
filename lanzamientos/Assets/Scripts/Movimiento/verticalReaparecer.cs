@@ -18,9 +18,15 @@ public class verticalReaparecer : MonoBehaviour {
 	void Update () {
         float tiempoActual = Time.timeSinceLevelLoad;
 
+        float tiempoTranscurrido = tiempoActual - t0;
+        if (tiempoTranscurrido > 0.05f)
+        {
+            tiempoTranscurrido = 0.05f;
+        }
+
         if (tiempoActual >= t0 + tiempoRefresco)
         {
-            float posicionY = transform.position.y + velocidad * (tiempoActual - t0);
+            float posicionY = transform.position.y + velocidad * (tiempoTranscurrido);
 
             if (velocidad > 0 && posicionY>=posicionReinicio)
             {

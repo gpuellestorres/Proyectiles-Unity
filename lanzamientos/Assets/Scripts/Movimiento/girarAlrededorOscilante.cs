@@ -57,13 +57,19 @@ public class girarAlrededorOscilante : MonoBehaviour {
 
         float tiempoActual = Time.timeSinceLevelLoad;
 
+        float tiempoTranscurrido = tiempoActual - t0;
+        if (tiempoTranscurrido > 0.05f)
+        {
+            tiempoTranscurrido = 0.05f;
+        }
+
         if (girarDerecha)
         {
-            grados -= velocidadGiro * (tiempoActual - t0);
+            grados -= velocidadGiro * (tiempoTranscurrido);
         }
         else
         {
-            grados += velocidadGiro * (tiempoActual - t0);
+            grados += velocidadGiro * (tiempoTranscurrido);
         }
 
         grados = grados % 360;

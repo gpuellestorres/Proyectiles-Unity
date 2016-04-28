@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
-using System;
 using UnityEngine.SceneManagement;
 
 public class cerrar : MonoBehaviour {
@@ -9,9 +7,13 @@ public class cerrar : MonoBehaviour {
     public float tiempoDobleCierre = 1;
     float t0=-1;
     public Text textoSalir;
- 
-	// Use this for initialization
-	void Start () {
+
+    public Canvas UINiveles;
+
+    // Use this for initialization
+    void Start () {
+
+        Instantiate(UINiveles);
 
         Text[] textos = FindObjectsOfType<Text>();
 

@@ -21,13 +21,19 @@ public class girar : MonoBehaviour {
         float tiempoActual = Time.timeSinceLevelLoad;
         if (tiempoActual >= t0 + tiempoRefresco)
         {
+            float tiempoTranscurrido = tiempoActual - t0;
+            if (tiempoTranscurrido > 0.05f)
+            {
+                tiempoTranscurrido = 0.05f;
+            }
+
             if (izquierda)
             {
-                transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + velocidadGiro * (tiempoActual - t0));
+                transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + velocidadGiro * (tiempoTranscurrido));
             }
             else
             {
-                transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z - velocidadGiro * (tiempoActual - t0));
+                transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z - velocidadGiro * (tiempoTranscurrido));
             }
 
             t0 = tiempoActual;

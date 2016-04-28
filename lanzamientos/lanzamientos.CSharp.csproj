@@ -94,6 +94,7 @@
     <Compile Include="Assets\Scripts\objetos\Gravedad.cs" />
     <Compile Include="Assets\Scripts\objetos\bomba.cs" />
     <Compile Include="Assets\Scripts\objetos\obstaculo.cs" />
+    <Compile Include="Assets\Scripts\objetos\orbita.cs" />
     <Compile Include="Assets\Scripts\objetos\portalA.cs" />
     <Compile Include="Assets\Scripts\sonidoEntreEscenas.cs" />
   </ItemGroup>

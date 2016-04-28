@@ -21,6 +21,11 @@ public class objetivo : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        quitarElementosMenu();
+    }
+
+    private void quitarElementosMenu()
+    {
         foreach (Button boton in FindObjectsOfType<Button>())
         {
             if (boton.name.Equals("NEXT"))
@@ -50,6 +55,11 @@ public class objetivo : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
+
+        if (Reintentar == null)
+        {
+            quitarElementosMenu();
+        }
 
         if (sonidoExito == null)
         {

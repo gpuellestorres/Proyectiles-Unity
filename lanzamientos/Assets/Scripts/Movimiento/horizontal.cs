@@ -30,9 +30,14 @@ public class horizontal : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         float tiempoActual = Time.timeSinceLevelLoad;
+
         if (tiempoActual >= tiempoRefresco + t0)
         {
             float tiempoTranscurrido = tiempoActual - t0;
+            if (tiempoTranscurrido > 0.05f)
+            {
+                tiempoTranscurrido = 0.05f;
+            }
 
             float posicionX = transform.position.x + velocidad * tiempoTranscurrido * direccion;
 

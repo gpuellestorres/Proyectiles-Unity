@@ -17,6 +17,8 @@ public class pelota : MonoBehaviour {
     public float fuerzaGravedad = 0.5f;
     public float gravedad = 2;
     public float minimoFuerzaRebote = 1;
+    public float velocidadOrbita = 45;
+    public float fuerzaOrbita = 20;
 
     public float segundosChoque = 2;
     float t0Choque = 0;
@@ -29,6 +31,13 @@ public class pelota : MonoBehaviour {
 
     public bool movimiento = false;
     bool inicioMovimiento = false;
+    bool enOrbita = false;
+
+    Transform objetoOrbita;
+    float gradosOrbita = 0;
+    public bool girarDerecha = true;
+    Vector2 centroOrbita;
+    float distanciaAlCentroOrbita;
 
     bool choque = false;
 
@@ -63,8 +72,6 @@ public class pelota : MonoBehaviour {
         
         if (fasesJugadas!=0 && fasesJugadas % 4 == 0)
         {
-            Advertisement.Initialize("1058782", true);
-
             if (Advertisement.IsReady())
             {
                 Advertisement.Show();
@@ -76,6 +83,7 @@ public class pelota : MonoBehaviour {
         posicionInicialFlecha = Flecha.transform.position;
 
         Flecha = Instantiate(Flecha);
+
         List<Transform> objsBenc = new List<Transform>();
 
         foreach (Transform barra in objetosBencina)
@@ -179,7 +187,7 @@ public class pelota : MonoBehaviour {
         if (((Application.platform!=RuntimePlatform.Android && Input.GetMouseButtonDown(0)) 
             || Input.GetButtonDown("ps4_X") 
             || presionandoFire)
-            && !inicioMovimiento && !movimiento)
+            && !inicioMovimiento && !movimiento && !enOrbita)
         {
             inicioMovimiento = true;
             t0 = Time.timeSinceLevelLoad;
@@ -188,16 +196,23 @@ public class pelota : MonoBehaviour {
 
         float tiempoActual = Time.timeSinceLevelLoad;
 
-        if (inicioMovimiento)
+        if (inicioMovimiento && !enOrbita)
         {
             if (tiempoActual >= t0 + tiempoRefresco)
             {
+                float tiempoTranscurrido = tiempoActual - t0;
+
+                if (tiempoTranscurrido >= 0.05f)
+                {
+                    tiempoTranscurrido = 0.05f;
+                }
+
                 if (
                     (Input.GetMouseButton(0) && Application.platform!=RuntimePlatform.Android)
                     || Input.GetButton("ps4_X") 
                     || presionandoFire)
                 {
-                    fuerza += 13.5f * (tiempoActual - t0);
+                    fuerza += 13.5f * (tiempoTranscurrido);
 
                     int indiceObjetos = (int)(fuerza*4);
 
@@ -207,8 +222,11 @@ public class pelota : MonoBehaviour {
                         return;
                     }
 
-                    objetosBencina[indiceObjetos].position = new Vector3(-7.6f, -4 + 0.14f * indiceObjetos, -1);
-                    if(indiceObjetos>0)objetosBencina[indiceObjetos-1].position = new Vector3(-7.6f, -4 + 0.14f * (indiceObjetos-1), -1);
+                    for (int i = indiceObjetos; i > 0 && i > indiceObjetos - 3; i--)
+                    {
+                        objetosBencina[i].position = new Vector3(-7.6f, -4 + 0.14f * i, -1);
+                    }
+                    
                 }
                 else
                 {
@@ -222,7 +240,46 @@ public class pelota : MonoBehaviour {
             }
         }
 
-        if (movimiento)
+        if (enOrbita)
+        {
+            if (((Application.platform != RuntimePlatform.Android && Input.GetMouseButtonDown(0))
+            || Input.GetButtonDown("ps4_X")
+            || presionandoFire))
+            {
+                enOrbita = false;
+                movimiento = true;
+                if (girarDerecha)
+                {
+                    movimientoX = Mathf.Cos((gradosOrbita - 90) * Mathf.Deg2Rad) * fuerzaOrbita;
+                    movimientoY = Mathf.Sin((gradosOrbita - 90) * Mathf.Deg2Rad) * fuerzaOrbita;
+                }
+                else
+                {
+                    movimientoX = Mathf.Cos((gradosOrbita + 90) * Mathf.Deg2Rad) * fuerzaOrbita;
+                    movimientoY = Mathf.Sin((gradosOrbita + 90) * Mathf.Deg2Rad) * fuerzaOrbita;
+                }
+                print(movimientoX + " - " + movimientoY);
+            }
+            else {
+
+                float diferenciaTiempo = tiempoActual - t0;
+                if (girarDerecha)
+                {
+                    gradosOrbita -= velocidadOrbita * (diferenciaTiempo);
+                }
+                else
+                {
+                    gradosOrbita += velocidadOrbita * (diferenciaTiempo);
+                }
+                transform.position =
+                    new Vector2(centroOrbita.x + Mathf.Cos(gradosOrbita * Mathf.Deg2Rad) * distanciaAlCentroOrbita,
+                    centroOrbita.y + Mathf.Sin(gradosOrbita * Mathf.Deg2Rad) * distanciaAlCentroOrbita);
+
+                t0 = tiempoActual;
+            }
+        }
+
+        if (movimiento && !enOrbita)
         {
             float influenciaGravedadX = 0,
                 influenciaGravedadY=0;
@@ -233,8 +290,6 @@ public class pelota : MonoBehaviour {
                 distancia = Mathf.Sqrt(distancia);
                 float razonX = (gravedad.transform.position.x - transform.position.x) / (distancia * distancia);
                 float razonY = (gravedad.transform.position.y - transform.position.y) / (distancia * distancia);
-
-                print(razonX + " - " + razonY);
 
                 influenciaGravedadX += fuerzaGravedad * gravedad.transform.localScale.x * razonX / distancia;
                 influenciaGravedadY += fuerzaGravedad * gravedad.transform.localScale.y * razonY / distancia;
@@ -300,10 +355,15 @@ public class pelota : MonoBehaviour {
         t0Choque = Time.timeSinceLevelLoad;
 
         //print("Colisión con objeto");
-        if (other.GetComponent<objetivo>() != null && tipo!="enter" && !other.GetComponent<objetivo>().destruido)
+        if (other.GetComponent<estrella>() != null && !choque && tipo.Equals("enter"))
+        {
+            //Vector2 diferencia = new Vector2(other.transform.position.x - transform.position.x, other.transform.position.y - transform.position.y);
+            other.transform.position = new Vector2(-20, -20);
+        }
+        else if (other.GetComponent<objetivo>() != null && tipo != "enter" && !other.GetComponent<objetivo>().destruido)
         {
             sonidoObjetivo.Play();
-            other.GetComponent<objetivo>().destruido = true;            
+            other.GetComponent<objetivo>().destruido = true;
         }
         else if (other.GetComponent<obstaculo>() != null && !choque && ultimoColisionador != other.transform && tipo.Equals("enter"))
         {
@@ -313,7 +373,7 @@ public class pelota : MonoBehaviour {
             modificarTrayectoria(rotacion, other.tag);
             sonidoRebote.Play();
         }
-        else if (other.GetComponent<bomba>() != null && other.GetComponent<bomba>().borrar!=true && !choque)
+        else if (other.GetComponent<bomba>() != null && other.GetComponent<bomba>().borrar != true && !choque)
         {
             choque = true;
             Vector2 diferenciaPosiciones =
@@ -342,10 +402,14 @@ public class pelota : MonoBehaviour {
             sonidoReiniciar.Play();
             reiniciar();
         }
-        else if (other.GetComponent<estrella>() != null && !choque && tipo.Equals("enter"))
+        else if (other.GetComponent<orbita>() != null && !enOrbita)
         {
-            //Vector2 diferencia = new Vector2(other.transform.position.x - transform.position.x, other.transform.position.y - transform.position.y);
-            other.transform.position = new Vector2(-20, -20);
+            objetoOrbita = other.transform;
+            distanciaAlCentroOrbita = objetoOrbita.transform.localScale.x * 4;
+            centroOrbita = objetoOrbita.position;
+            gradosOrbita = 0;
+            girarDerecha = objetoOrbita.GetComponent<orbita>().girarDerecha;
+            enOrbita = true;
         }
     }
 
@@ -366,8 +430,6 @@ public class pelota : MonoBehaviour {
 
     private void modificarTrayectoria(Vector3 rotacion, string tag)
     {
-        print(tag);
-
         float normal = rotacion.z - 180;
 
         if (tag.Equals("derecho"))

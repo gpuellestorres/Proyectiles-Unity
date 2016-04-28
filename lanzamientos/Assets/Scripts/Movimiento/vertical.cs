@@ -24,6 +24,11 @@ public class vertical : MonoBehaviour {
         {
             float tiempoTranscurrido = tiempoActual - t0;
 
+            if (tiempoTranscurrido > 0.05f)
+            {
+                tiempoTranscurrido = 0.05f;
+            }
+
             float posicionY = transform.position.y + velocidad * tiempoTranscurrido * direccion;
 
             if (direccion == 1)

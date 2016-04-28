@@ -57,13 +57,19 @@ public class girarAlrededor : MonoBehaviour
 
         float tiempoActual = Time.timeSinceLevelLoad;
 
+        float tiempoTranscurrido = tiempoActual - t0;
+        if (tiempoTranscurrido > 0.05f)
+        {
+            tiempoTranscurrido = 0.05f;
+        }
+
         if (girarDerecha)
         {
-            grados -= velocidadGiro * (tiempoActual - t0);
+            grados -= velocidadGiro * (tiempoTranscurrido);
         }
         else
         {
-            grados += velocidadGiro * (tiempoActual - t0);
+            grados += velocidadGiro * (tiempoTranscurrido);
         }
         transform.position =
             new Vector2(centro.x + Mathf.Cos(grados * Mathf.Deg2Rad) * distanciaAlCentro,
