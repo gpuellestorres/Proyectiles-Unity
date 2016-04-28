@@ -61,6 +61,13 @@ public class pelota : MonoBehaviour {
     Camera camara;
 
     Gravedad[] Gravedad;
+
+
+    public float limiteInferior = -6;
+    public float limiteSuperior = 7;
+    public float limiteIzquierdo = -10;
+    public float limiteDerecho = 10;
+
     // Use this for initialization
     void Start() {
 
@@ -119,6 +126,8 @@ public class pelota : MonoBehaviour {
         fuerza = 0;
         movimiento = false;
         inicioMovimiento = false;
+        enOrbita = false;
+        objetoOrbita = null;
 
         foreach (Transform Objeto in objetosBencina)
         {
@@ -248,19 +257,46 @@ public class pelota : MonoBehaviour {
             {
                 enOrbita = false;
                 movimiento = true;
+
+                int enteroGradosOrbita = ((int)(gradosOrbita / 10)) * 10;
+
+                if (gradosOrbita % 10 > 5) gradosOrbita = 10;
+                else gradosOrbita = 0;
+
+                gradosOrbita += enteroGradosOrbita;
+
+                float xGiroOrbita = 0;
+                float yGiroOrbita = 0;
+
+                if (objetoOrbita.GetComponent<girarAlrededor>() != null)
+                {
+                    girarAlrededor datosGiro = objetoOrbita.GetComponent<girarAlrededor>();
+                    if (datosGiro.girarDerecha)
+                    {
+                        xGiroOrbita = Mathf.Cos((datosGiro.grados - 90) * Mathf.Deg2Rad) * datosGiro.distanciaAlCentro;
+                        yGiroOrbita = Mathf.Sin((datosGiro.grados - 90) * Mathf.Deg2Rad) * datosGiro.distanciaAlCentro;
+                    }
+                    else
+                    {
+                        xGiroOrbita = Mathf.Cos((datosGiro.grados + 90) * Mathf.Deg2Rad) * datosGiro.distanciaAlCentro;
+                        yGiroOrbita = Mathf.Sin((datosGiro.grados + 90) * Mathf.Deg2Rad) * datosGiro.distanciaAlCentro;
+                    }
+                }
+
                 if (girarDerecha)
                 {
-                    movimientoX = Mathf.Cos((gradosOrbita - 90) * Mathf.Deg2Rad) * fuerzaOrbita;
-                    movimientoY = Mathf.Sin((gradosOrbita - 90) * Mathf.Deg2Rad) * fuerzaOrbita;
+                    movimientoX = Mathf.Cos((gradosOrbita - 90) * Mathf.Deg2Rad) * fuerzaOrbita + xGiroOrbita;
+                    movimientoY = Mathf.Sin((gradosOrbita - 90) * Mathf.Deg2Rad) * fuerzaOrbita + yGiroOrbita;
                 }
                 else
                 {
-                    movimientoX = Mathf.Cos((gradosOrbita + 90) * Mathf.Deg2Rad) * fuerzaOrbita;
-                    movimientoY = Mathf.Sin((gradosOrbita + 90) * Mathf.Deg2Rad) * fuerzaOrbita;
+                    movimientoX = Mathf.Cos((gradosOrbita + 90) * Mathf.Deg2Rad) * fuerzaOrbita + xGiroOrbita;
+                    movimientoY = Mathf.Sin((gradosOrbita + 90) * Mathf.Deg2Rad) * fuerzaOrbita + yGiroOrbita;
                 }
-                print(movimientoX + " - " + movimientoY);
             }
             else {
+
+                centroOrbita = objetoOrbita.position;
 
                 float diferenciaTiempo = tiempoActual - t0;
                 if (girarDerecha)
@@ -310,7 +346,8 @@ public class pelota : MonoBehaviour {
                 movimientoY -= gravedad * diferenciaTiempo;
             }
 
-            if (transform.position.y < -6 || transform.position.y > 7 || transform.position.x > 10 || transform.position.x < -10)
+            if (transform.position.y < limiteInferior || transform.position.y > limiteSuperior
+                || transform.position.x > limiteDerecho || transform.position.x < limiteIzquierdo)
             {
                 sonidoReiniciar.Play();
                 reiniciar();
@@ -402,13 +439,15 @@ public class pelota : MonoBehaviour {
             sonidoReiniciar.Play();
             reiniciar();
         }
-        else if (other.GetComponent<orbita>() != null && !enOrbita)
+        else if (other.GetComponent<orbita>() != null && !enOrbita && tipo.Equals("enter"))
         {
             objetoOrbita = other.transform;
             distanciaAlCentroOrbita = objetoOrbita.transform.localScale.x * 4;
             centroOrbita = objetoOrbita.position;
-            gradosOrbita = 0;
             girarDerecha = objetoOrbita.GetComponent<orbita>().girarDerecha;
+
+            gradosOrbita = other.GetComponent<orbita>().gradosInicio;            
+
             enOrbita = true;
         }
     }

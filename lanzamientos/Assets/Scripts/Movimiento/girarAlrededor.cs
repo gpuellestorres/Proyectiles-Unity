@@ -9,10 +9,10 @@ public class girarAlrededor : MonoBehaviour
     public Vector2 centro = new Vector2(0, 0);
 
     public bool girarDerecha = true;
-    float grados = 0;
+    public float grados = 0;
 
     float t0 = 0;
-    float distanciaAlCentro;
+    public float distanciaAlCentro;
 
     Vector2 posicionInicial;
 

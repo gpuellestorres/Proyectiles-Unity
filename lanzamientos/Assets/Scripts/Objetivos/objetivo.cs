@@ -33,14 +33,14 @@ public class objetivo : MonoBehaviour {
                 Reintentar = boton;
                 posicionReintentar = new Vector3(Reintentar.transform.position.x, Reintentar.transform.position.y, -9.5f);
 
-                Reintentar.transform.position = new Vector2(-5000, -5000);
+                Reintentar.transform.position = new Vector2(-10000, -10000);
             }
             else if (boton.name.Equals("RETRY"))
             {
                 Siguiente = boton;
                 posicionSiguiente = new Vector3(Siguiente.transform.position.x, Siguiente.transform.position.y, -9.5f);
 
-                Siguiente.transform.position = new Vector2(-5000, -5000);
+                Siguiente.transform.position = new Vector2(-10000, -10000);
             }
         }
     }

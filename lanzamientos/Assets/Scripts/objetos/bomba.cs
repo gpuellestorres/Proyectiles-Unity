@@ -4,6 +4,7 @@ using System.Collections;
 public class bomba : MonoBehaviour {
 
     public bool borrar = false;
+    public bool reaparecer = false;
     public float tiempoDesaparecer = 0.5f;
     float t0 = 0;
 
@@ -47,7 +48,12 @@ public class bomba : MonoBehaviour {
             }
             else
             {
-                if (Time.timeSinceLevelLoad >= t0 + tiempoDesaparecer)
+                if ((Time.timeSinceLevelLoad >= t0 + tiempoDesaparecer + 0.5f && reaparecer))
+                {
+                    transform.position = posicionInicio;
+                    borrar = false;
+                }
+                else if (Time.timeSinceLevelLoad >= t0 + tiempoDesaparecer)
                 {
                     desaparecer();
                 }
