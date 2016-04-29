@@ -109,6 +109,7 @@ public class pelota : MonoBehaviour {
         if (Application.platform == RuntimePlatform.Android)
         {
             botonDisparar = Instantiate(botonDisparar);
+            botonDisparar.name = "Fire2(Clone)";
 
             spriteBotonBomba = botonDisparar.GetComponent<SpriteRenderer>();
 
@@ -161,11 +162,14 @@ public class pelota : MonoBehaviour {
         if (Input.touchCount > 0)
         {
             foreach (RaycastHit2D hit in Physics2D.RaycastAll(camara.ScreenToWorldPoint(Input.touches[0].position), Vector3.forward))
+            {
+                print(hit.collider.name);
                 if (hit.collider.name.Equals("Fire2(Clone)"))
                 {
                     spriteBotonBomba.color = alternativo;
                     presionandoFire = true;
                 }
+            }
         }
         else if (RuntimePlatform.Android==Application.platform)
         {

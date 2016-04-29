@@ -42,6 +42,9 @@ public class puntero : MonoBehaviour {
             flechaControlDer = Instantiate(flechaControlDer);
             flechaControlIzq = Instantiate(flechaControlIzq);
 
+            flechaControlDer.name = "flechaControlDer(Clone)";
+            flechaControlIzq.name = "flechaControlIzq(Clone)";
+
             flechaIzqRend = flechaControlIzq.GetComponent<SpriteRenderer>();
             flechaDerRend = flechaControlDer.GetComponent<SpriteRenderer>();
 
@@ -99,7 +102,7 @@ public class puntero : MonoBehaviour {
             if (objetoColision.Equals("flechaControlIzq(Clone)"))
             {
                 posX -= 0.03f;
-                flechaDerRend.color = alternativo;
+                flechaIzqRend.color = alternativo;
             }
             else
             {
@@ -108,7 +111,7 @@ public class puntero : MonoBehaviour {
             if (objetoColision.Equals("flechaControlDer(Clone)"))
             {
                 posX += 0.03f;
-                flechaIzqRend.color = alternativo;
+                flechaDerRend.color = alternativo;
             }
             else
             {
@@ -126,7 +129,6 @@ public class puntero : MonoBehaviour {
 
             posY = Pelota.transform.position.x + Pelota.transform.position.y - posX + 5;
             transform.position = new Vector2(posX, posY);
-            print(Pelota.transform.position + " - " + posX + ", " + posY);
         }
         /*
         if (Input.touchCount > 0 &&
